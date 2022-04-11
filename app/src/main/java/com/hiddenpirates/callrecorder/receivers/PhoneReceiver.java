@@ -29,8 +29,7 @@ public class PhoneReceiver extends BroadcastReceiver {
             if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
 
                 if (!callAnswered){
-                    Log.d(TAG, "Call answered");
-                    Log.d(TAG, "Phone Number: " + MyCallScreeningService.PHONE_NUMBER);
+                    Log.d(TAG, "EXTRA_STATE_OFFHOOK/Call_Answered_Or_Outgoing");
                     callAnswered = true;
 
                     new Handler(Looper.getMainLooper()).postDelayed(() -> callAnswered = false, 2000);
@@ -39,8 +38,7 @@ public class PhoneReceiver extends BroadcastReceiver {
             else if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_IDLE)) {
 
                 if (!callEnded){
-                    Log.d(TAG, "Call ended");
-                    Log.d(TAG, "Phone Number: "+MyCallScreeningService.PHONE_NUMBER);
+                    Log.d(TAG, "EXTRA_STATE_IDLE/Call_Ended");
                     callEnded = true;
 
                     new Handler(Looper.getMainLooper()).postDelayed(() -> callEnded = false, 2000);
@@ -49,8 +47,7 @@ public class PhoneReceiver extends BroadcastReceiver {
             else if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_RINGING)) {
 
                 if (!callRinging){
-                    Log.d(TAG, "Call Ringing");
-                    Log.d(TAG, "Phone Number: "+MyCallScreeningService.PHONE_NUMBER);
+                    Log.d(TAG, "EXTRA_STATE_RINGING/Call_Ringing");
                     callRinging = true;
 
                     new Handler(Looper.getMainLooper()).postDelayed(() -> callRinging = false, 2000);
