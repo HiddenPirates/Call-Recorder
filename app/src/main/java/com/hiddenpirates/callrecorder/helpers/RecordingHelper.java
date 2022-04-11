@@ -22,7 +22,7 @@ public class RecordingHelper {
     Context context;
     private final String phoneNumber;
     String finalFileName;
-    private MediaRecorder recorder = new MediaRecorder();
+    public static MediaRecorder recorder;
 
     public RecordingHelper(Context context, String phoneNumber){
         this.context = context;
@@ -53,6 +53,8 @@ public class RecordingHelper {
 
             finalFileName = directoryPath + fileName;
 
+            recorder = new MediaRecorder();
+            recorder.reset();
             recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_CALL);
             recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
@@ -64,7 +66,7 @@ public class RecordingHelper {
             } catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(context, "Recording start failed! " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "stopVoiceRecoding: " + e.getMessage());
+                Log.d(TAG, "startVoiceRecoding: " + e.getMessage());
             }
         } else {
             Toast.makeText(context, "Storage permission is not granted.", Toast.LENGTH_SHORT).show();
@@ -81,6 +83,7 @@ public class RecordingHelper {
             Toast.makeText(context, "Recording saved to: " + finalFileName, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             e.printStackTrace();
+            recorder = null;
             Toast.makeText(context, "Recording saved to:> " + finalFileName, Toast.LENGTH_SHORT).show();
             Log.d(TAG, "stopVoiceRecoding: " + e.getMessage());
         }

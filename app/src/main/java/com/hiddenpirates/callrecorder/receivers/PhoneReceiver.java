@@ -8,10 +8,9 @@ import android.os.Looper;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import androidx.core.content.ContextCompat;
-
+import com.hiddenpirates.callrecorder.activities.StartForegroundActivity;
 import com.hiddenpirates.callrecorder.helpers.ContactsHelper;
-import com.hiddenpirates.callrecorder.services.CallRecordingService;
+import com.hiddenpirates.callrecorder.services.RecordingService;
 import com.hiddenpirates.callrecorder.services.MyCallScreeningService;
 
 public class PhoneReceiver extends BroadcastReceiver {
@@ -31,7 +30,11 @@ public class PhoneReceiver extends BroadcastReceiver {
             if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_OFFHOOK)) {
 
                 if (!callAnswered){
-                    ContextCompat.startForegroundService(context, new Intent(context, CallRecordingService.class));
+
+                    Intent serviceIntent = new Intent(context, StartForegroundActivity.class);
+                    serviceIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(serviceIntent);
+
                     Log.d(TAG, "EXTRA_STATE_OFFHOOK/Call_Answered_Or_Outgoing");
                     callAnswered = true;
 
@@ -41,7 +44,7 @@ public class PhoneReceiver extends BroadcastReceiver {
             else if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_IDLE)) {
 
                 if (!callEnded){
-                    context.stopService(new Intent(context, CallRecordingService.class));
+                    context.stopService(new Intent(context, RecordingService.class));
                     Log.d(TAG, "EXTRA_STATE_IDLE/Call_Ended");
                     callEnded = true;
 

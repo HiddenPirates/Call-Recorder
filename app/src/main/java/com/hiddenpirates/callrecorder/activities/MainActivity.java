@@ -4,13 +4,11 @@ import android.Manifest;
 import android.app.role.RoleManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -21,7 +19,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import java.util.UUID;
+import com.hiddenpirates.callrecorder.helpers.RecordingHelper;
+import com.hiddenpirates.callrecorder.services.MyCallScreeningService;
 
 import callrecorder.R;
 
@@ -29,15 +28,11 @@ public class MainActivity extends AppCompatActivity {
 
     Button startRecordButton, stopRecordButton;
 
-    private static final String TAG = "MADARA";
-
     private static final int REQUEST_PERMISSION_CODE = 4528;
     private static final int CALL_SCREEN_REQUEST_ID = 64543;
-    private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 36363;
     private static final int MANAGE_EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE = 5000;
 
-    private static String fileName = null;
-    private MediaRecorder recorder = null;
+    RecordingHelper recordingHelper;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -48,10 +43,17 @@ public class MainActivity extends AppCompatActivity {
         initializeComponents();
         requestCallScreenPermission();
         askPermission();
-        requestDisplayOverPermission();
+
+        if (RecordingHelper.recorder != null){
+            stopRecordButton.setVisibility(View.VISIBLE);
+            startRecordButton.setVisibility(View.GONE);
+        }
+        else{
+            stopRecordButton.setVisibility(View.GONE);
+            startRecordButton.setVisibility(View.VISIBLE);
+        }
 
         startRecordButton.setOnClickListener(v -> startVoiceRecoding());
-
         stopRecordButton.setOnClickListener(v -> stopVoiceRecoding());
     }
 
@@ -107,64 +109,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void requestDisplayOverPermission() {
-
-        if (!Settings.canDrawOverlays(this)) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE);
-        }
-    }
-
     private void requestCallScreenPermission(){
         RoleManager roleManager = (RoleManager) getSystemService(ROLE_SERVICE);
         Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING);
         startActivityForResult(intent, CALL_SCREEN_REQUEST_ID);
     }
 
-    private void stopVoiceRecoding() {
-
-        try {
-            recorder.release();
-            recorder.stop();
-            recorder.reset();
-            recorder = null;
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
-        startRecordButton.setVisibility(View.VISIBLE);
-        stopRecordButton.setVisibility(View.GONE);
-
-        Toast.makeText(this, "Recording saved to " + fileName, Toast.LENGTH_SHORT).show();
+    private void startVoiceRecoding() {
+        recordingHelper = new RecordingHelper(this, MyCallScreeningService.PHONE_NUMBER);
+        recordingHelper.startVoiceRecoding();
     }
 
-    private void startVoiceRecoding() {
-
-        fileName = Environment.getExternalStorageDirectory().getPath() + "/" + UUID.randomUUID() + ".mp3";
-
-        recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        recorder.setOutputFile(fileName);
-
-        try {
-            recorder.prepare();
-            recorder.start();
-
-            startRecordButton.setVisibility(View.GONE);
-            stopRecordButton.setVisibility(View.VISIBLE);
-
-            Toast.makeText(MainActivity.this, "Recording started!", Toast.LENGTH_SHORT).show();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, "startVoiceRecoding: error");
-            Toast.makeText(MainActivity.this, e.getMessage()+"\n"+e.getLocalizedMessage() , Toast.LENGTH_SHORT).show();
-            Log.e(TAG,  e.getMessage()+"\n"+e.getLocalizedMessage());
-        }
-
+    private void stopVoiceRecoding() {
+        recordingHelper.stopVoiceRecoding();
     }
 
     private void initializeComponents() {

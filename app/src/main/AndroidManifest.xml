@@ -4,6 +4,7 @@
     package="callrecorder">
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
@@ -21,11 +22,11 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:preserveLegacyExternalStorage="true"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:largeHeap="true"
         android:theme="@style/Theme.VoiceRecorder"
         tools:targetApi="r">
         <activity
@@ -38,6 +39,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.hiddenpirates.callrecorder.activities.StartForegroundActivity"
+            android:exported="false"
+            android:enabled="true"/>
+
         <receiver
             android:name="com.hiddenpirates.callrecorder.receivers.PhoneReceiver"
             android:enabled="true"
@@ -47,22 +53,22 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="com.hiddenpirates.callrecorder.services.MyCallScreeningService"
-            android:permission="android.permission.BIND_SCREENING_SERVICE"
+        <service
+            android:name="com.hiddenpirates.callrecorder.services.MyCallScreeningService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            android:permission="android.permission.BIND_SCREENING_SERVICE">
             <intent-filter>
-                <action android:name="android.telecom.CallScreeningService"/>
+                <action android:name="android.telecom.CallScreeningService" />
             </intent-filter>
         </service>
 
         <service
-            android:name="com.hiddenpirates.callrecorder.services.CallRecordingService"
-            android:foregroundServiceType="microphone"
+            android:name="com.hiddenpirates.callrecorder.services.RecordingService"
             android:enabled="true"
             android:exported="true"
+            android:foregroundServiceType="microphone"
             tools:ignore="ExportedService" />
 
     </application>
-
 </manifest>
