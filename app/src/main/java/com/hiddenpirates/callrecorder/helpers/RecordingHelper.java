@@ -53,8 +53,7 @@ public class RecordingHelper {
 
             finalFileName = directoryPath + fileName;
 
-//            recorder = new MediaRecorder();
-            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_CALL);
             recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
             recorder.setOutputFile(finalFileName);
@@ -67,7 +66,6 @@ public class RecordingHelper {
                 Toast.makeText(context, "Recording start failed! " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "stopVoiceRecoding: " + e.getMessage());
             }
-
         } else {
             Toast.makeText(context, "Storage permission is not granted.", Toast.LENGTH_SHORT).show();
         }

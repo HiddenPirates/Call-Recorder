@@ -1,24 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="com.hiddenpirates.callrecorder.activities.MainActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="By using this button, it simply will start MIC voice recording."
+        android:layout_centerInParent="true"
+        android:textSize="20sp"
+        android:textAlignment="center"
+        tools:ignore="HardcodedText" />
 
     <Button
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="Start"
-        tools:ignore="HardcodedText"
         android:id="@+id/startRecordButton"
+        android:layout_width="150dp"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="100dp"/>
+        android:layout_marginBottom="100dp"
+        android:text="Start"
+        tools:ignore="HardcodedText" />
 
     <Button
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        android:layout_width="60dp"
         android:text="Stop"
         tools:ignore="HardcodedText"
         android:id="@+id/stopRecordButton"
