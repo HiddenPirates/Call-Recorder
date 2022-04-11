@@ -8,11 +8,11 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="By using this button, it simply will start MIC voice recording."
         android:layout_centerInParent="true"
-        android:textSize="20sp"
+        android:padding="10dp"
+        android:text="By using this button, manually start call recording."
         android:textAlignment="center"
+        android:textSize="20sp"
         tools:ignore="HardcodedText" />
 
     <Button
