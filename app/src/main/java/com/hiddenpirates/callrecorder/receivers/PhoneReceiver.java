@@ -21,7 +21,6 @@ public class PhoneReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        Log.d(TAG, "onReceive: ");
         Log.d(TAG, "Contact Name: " + ContactsHelper.getContactNameByPhoneNumber(MyCallScreeningService.PHONE_NUMBER, context));
 
         if (intent.getAction().equals("android.intent.action.PHONE_STATE")){

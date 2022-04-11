@@ -1,6 +1,7 @@
 package com.hiddenpirates.callrecorder.activities;
 
 import android.Manifest;
+import android.app.role.RoleManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
@@ -28,8 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     Button startRecordButton, stopRecordButton;
     private static final String TAG = "MADARA";
-    private static final int REQUEST_PERMISSION_CODE = 4528;
-    private static final int MANAGE_EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE = 5000;
+    private static final int REQUEST_PERMISSION_CODE = 4528, MANAGE_EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE = 5000, CALL_SCREEN_REQUEST_ID = 64543;
     private static String fileName = null;
     private MediaRecorder recorder = null;
 
@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initializeComponents();
+        requestCallScreenPermission();
         askPermission();
 
         startRecordButton.setOnClickListener(v -> startVoiceRecoding());
@@ -97,6 +98,12 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.READ_PHONE_STATE
         }, REQUEST_PERMISSION_CODE);
 
+    }
+
+    private void requestCallScreenPermission(){
+        RoleManager roleManager = (RoleManager) getSystemService(ROLE_SERVICE);
+        Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING);
+        startActivityForResult(intent, CALL_SCREEN_REQUEST_ID);
     }
 
     private void stopVoiceRecoding() {
