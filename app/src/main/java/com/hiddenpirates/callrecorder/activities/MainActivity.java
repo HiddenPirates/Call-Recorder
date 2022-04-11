@@ -28,8 +28,14 @@ import callrecorder.R;
 public class MainActivity extends AppCompatActivity {
 
     Button startRecordButton, stopRecordButton;
+
     private static final String TAG = "MADARA";
-    private static final int REQUEST_PERMISSION_CODE = 4528, MANAGE_EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE = 5000, CALL_SCREEN_REQUEST_ID = 64543;
+
+    private static final int REQUEST_PERMISSION_CODE = 4528;
+    private static final int CALL_SCREEN_REQUEST_ID = 64543;
+    private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 36363;
+    private static final int MANAGE_EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE = 5000;
+
     private static String fileName = null;
     private MediaRecorder recorder = null;
 
@@ -42,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
         initializeComponents();
         requestCallScreenPermission();
         askPermission();
+        requestDisplayOverPermission();
 
         startRecordButton.setOnClickListener(v -> startVoiceRecoding());
 
@@ -100,6 +107,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void requestDisplayOverPermission() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+            startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE);
+        }
+    }
+
     private void requestCallScreenPermission(){
         RoleManager roleManager = (RoleManager) getSystemService(ROLE_SERVICE);
         Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING);
@@ -129,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
         fileName = Environment.getExternalStorageDirectory().getPath() + "/" + UUID.randomUUID() + ".mp3";
 
         recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_CALL);
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         recorder.setOutputFile(fileName);

@@ -14,6 +14,8 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
@@ -53,6 +55,13 @@
                 <action android:name="android.telecom.CallScreeningService"/>
             </intent-filter>
         </service>
+
+        <service
+            android:name="com.hiddenpirates.callrecorder.services.CallRecordingService"
+            android:foregroundServiceType="microphone"
+            android:enabled="true"
+            android:exported="true"
+            tools:ignore="ExportedService" />
 
     </application>
 
