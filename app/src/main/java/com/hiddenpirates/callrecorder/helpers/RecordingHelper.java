@@ -74,6 +74,8 @@ public class RecordingHelper {
                 new MainActivity().startRecordButton.setVisibility(View.GONE);
                 new MainActivity().stopRecordButton.setVisibility(View.VISIBLE);
 
+                Toast.makeText(context, "Recording started", Toast.LENGTH_SHORT).show();
+
             } catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(context, "Recording start failed! " + e.getMessage(), Toast.LENGTH_SHORT).show();
