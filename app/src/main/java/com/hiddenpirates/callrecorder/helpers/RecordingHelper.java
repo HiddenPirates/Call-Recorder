@@ -34,7 +34,9 @@ public class RecordingHelper {
 
         if (checkStorageAccessPermission()) {
 
-            File dir = new File(Environment.getExternalStorageDirectory().getPath() + "/Call-Recorder");
+            String app_content_directory_name = "/Call Recorder";
+
+            File dir = new File(Environment.getExternalStorageDirectory().getPath() + app_content_directory_name);
 
             if (!dir.exists()) {
                 if (!dir.mkdirs()){
@@ -42,14 +44,14 @@ public class RecordingHelper {
                 }
             }
 
-            String directoryPath = Environment.getExternalStorageDirectory().getPath() + "/Call-Recorder/";
+            String directoryPath = Environment.getExternalStorageDirectory().getPath() + app_content_directory_name;
 
             String fileName = ContactsHelper.getContactNameByPhoneNumber(phoneNumber, context)
-                    + "_"
+                    + "_("
                     + phoneNumber
                     + ")_"
                     + new SimpleDateFormat("yyyy-MM-dd_hh-mm-ss").format(Calendar.getInstance().getTime())
-                    + ".mp3";
+                    + ".m4a";
 
             finalFileName = directoryPath + fileName;
 
@@ -57,7 +59,9 @@ public class RecordingHelper {
             recorder.reset();
             recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_CALL);
             recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            recorder.setAudioEncodingBitRate(16*44100);
+            recorder.setAudioSamplingRate(44100);
             recorder.setOutputFile(finalFileName);
 
             try {
@@ -84,7 +88,7 @@ public class RecordingHelper {
         } catch (Exception e) {
             e.printStackTrace();
             recorder = null;
-            Toast.makeText(context, "Recording saved to:> " + finalFileName, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Recording saved", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "stopVoiceRecoding: " + e.getMessage());
         }
     }

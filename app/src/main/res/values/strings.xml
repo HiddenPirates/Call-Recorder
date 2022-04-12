@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Call Recorder</string>
+
+    <string name="not_system_app_message_title">App is not a system app.</string>
+    <string name="not_system_app_message_body">
+        After Android 9 or greater, it is not possible to record calls by using third party apps. So that\'s why you have manually make this app as a system app. If you don\'t know how to make a third party app to system app, then you should read this tutorial post.
+    </string>
+    <string name="tutorial_post_link">https://www.droidwin.com/how-to-convert-any-android-app-to-system-app/</string>
 </resources>

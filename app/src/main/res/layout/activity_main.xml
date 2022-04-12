@@ -17,22 +17,24 @@
 
     <Button
         android:id="@+id/startRecordButton"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="100dp"
-        android:text="Start"
+        android:backgroundTint="@color/green"
+        android:text="Start Recording"
         tools:ignore="HardcodedText" />
 
     <Button
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="60dp"
-        android:text="Stop"
+        android:text="Stop Recording"
         tools:ignore="HardcodedText"
         android:id="@+id/stopRecordButton"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:backgroundTint="@color/red"
         android:visibility="gone"
         android:layout_marginBottom="100dp"/>
 
