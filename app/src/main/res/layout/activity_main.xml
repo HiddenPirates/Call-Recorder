@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:padding="10dp"
-        android:text="By using this button, manually start call recording."
+        android:text="Auto Call Recorder"
         android:textAlignment="center"
         android:textSize="20sp"
         tools:ignore="HardcodedText" />
@@ -24,6 +24,7 @@
         android:layout_marginBottom="100dp"
         android:backgroundTint="@color/green"
         android:text="Start Recording"
+        android:visibility="gone"
         tools:ignore="HardcodedText" />
 
     <Button

@@ -86,16 +86,8 @@ public class MainActivity extends AppCompatActivity {
             builder.show();
         }
         else{
-            initializeComponents();
             requestCallScreenPermission();
             askPermission();
-
-            startRecordButton.setOnClickListener(v -> {
-                recordingHelper = new RecordingHelper(this, MyCallScreeningService.PHONE_NUMBER);
-                recordingHelper.startVoiceRecoding();
-            });
-
-            stopRecordButton.setOnClickListener(v -> stopService(new Intent(this, RecordingService.class)));
         }
 //        ------------------------------------------------------------------------------------------
     }
@@ -161,10 +153,5 @@ public class MainActivity extends AppCompatActivity {
             intent.setData(Uri.fromParts("package", getPackageName(), null));
             startActivityForResult(intent, MANAGE_EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE);
         }
-    }
-
-    private void initializeComponents() {
-        startRecordButton = findViewById(R.id.startRecordButton);
-        stopRecordButton = findViewById(R.id.stopRecordButton);
     }
 }

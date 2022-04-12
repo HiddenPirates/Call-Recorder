@@ -8,12 +8,9 @@ import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
-
-import com.hiddenpirates.callrecorder.activities.MainActivity;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -71,9 +68,6 @@ public class RecordingHelper {
                 recorder.prepare();
                 recorder.start();
 
-                new MainActivity().startRecordButton.setVisibility(View.GONE);
-                new MainActivity().stopRecordButton.setVisibility(View.VISIBLE);
-
                 Toast.makeText(context, "Recording started", Toast.LENGTH_SHORT).show();
 
             } catch (Exception e) {
@@ -100,9 +94,6 @@ public class RecordingHelper {
             Toast.makeText(context, "Recording saved", Toast.LENGTH_SHORT).show();
             Log.d(TAG, "stopVoiceRecoding: " + e.getMessage());
         }
-
-        new MainActivity().startRecordButton.setVisibility(View.VISIBLE);
-        new MainActivity().stopRecordButton.setVisibility(View.GONE);
     }
 
     private boolean checkStorageAccessPermission() {
