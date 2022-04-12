@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -32,7 +31,7 @@ import callrecorder.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button startRecordButton, stopRecordButton;
+    public Button startRecordButton, stopRecordButton;
 
     private static final int REQUEST_PERMISSION_CODE = 4528;
     private static final int CALL_SCREEN_REQUEST_ID = 64543;
@@ -70,7 +69,10 @@ public class MainActivity extends AppCompatActivity {
             builder.setMessage(getString(R.string.not_system_app_message_body));
             builder.setIcon(R.drawable.ic_error);
             builder.setCancelable(false);
-            builder.setPositiveButton("Ok", (dialog, which) -> dialog.dismiss());
+            builder.setPositiveButton("Ok", (dialog, which) -> {
+                dialog.dismiss();
+                finishAndRemoveTask();
+            });
             builder.setNegativeButton("Read Post",  (dialog, which) -> {
                 try {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.app_name))));
@@ -78,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this, "No app found to open this link", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                 }
+                finishAndRemoveTask();
             });
             builder.create();
             builder.show();
@@ -86,15 +89,6 @@ public class MainActivity extends AppCompatActivity {
             initializeComponents();
             requestCallScreenPermission();
             askPermission();
-
-            if (RecordingHelper.recorder != null){
-                stopRecordButton.setVisibility(View.VISIBLE);
-                startRecordButton.setVisibility(View.GONE);
-            }
-            else{
-                stopRecordButton.setVisibility(View.GONE);
-                startRecordButton.setVisibility(View.VISIBLE);
-            }
 
             startRecordButton.setOnClickListener(v -> {
                 recordingHelper = new RecordingHelper(this, MyCallScreeningService.PHONE_NUMBER);
