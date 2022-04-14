@@ -35,29 +35,34 @@ public class PhoneReceiver extends BroadcastReceiver {
                     serviceIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(serviceIntent);
 
-                    Log.d(TAG, "EXTRA_STATE_OFFHOOK/Call_Answered_Or_Outgoing");
                     callAnswered = true;
 
                     new Handler(Looper.getMainLooper()).postDelayed(() -> callAnswered = false, 2000);
+
+                    Log.d(TAG, "EXTRA_STATE_OFFHOOK/Call_Answered_Or_Outgoing");
                 }
             }
             else if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_IDLE)) {
 
                 if (!callEnded){
+
                     context.stopService(new Intent(context, RecordingService.class));
-                    Log.d(TAG, "EXTRA_STATE_IDLE/Call_Ended");
                     callEnded = true;
 
                     new Handler(Looper.getMainLooper()).postDelayed(() -> callEnded = false, 2000);
+
+                    Log.d(TAG, "EXTRA_STATE_IDLE/Call_Ended");
                 }
             }
             else if (intent.getStringExtra(TelephonyManager.EXTRA_STATE).equals(TelephonyManager.EXTRA_STATE_RINGING)) {
 
                 if (!callRinging){
-                    Log.d(TAG, "EXTRA_STATE_RINGING/Call_Ringing");
+
                     callRinging = true;
 
                     new Handler(Looper.getMainLooper()).postDelayed(() -> callRinging = false, 2000);
+
+                    Log.d(TAG, "EXTRA_STATE_RINGING/Call_Ringing");
                 }
             }
         }
