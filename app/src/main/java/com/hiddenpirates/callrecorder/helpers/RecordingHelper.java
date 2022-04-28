@@ -60,7 +60,7 @@ public class RecordingHelper {
             recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_CALL);
             recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-            recorder.setAudioEncodingBitRate(16*44100);
+            recorder.setAudioEncodingBitRate(16);
             recorder.setAudioSamplingRate(44100);
             recorder.setOutputFile(finalFileName);
 
