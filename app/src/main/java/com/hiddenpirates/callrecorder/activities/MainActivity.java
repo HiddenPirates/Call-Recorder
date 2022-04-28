@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,23 +20,15 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.hiddenpirates.callrecorder.helpers.RecordingHelper;
-import com.hiddenpirates.callrecorder.services.MyCallScreeningService;
-import com.hiddenpirates.callrecorder.services.RecordingService;
-
 import java.util.List;
 
 import callrecorder.R;
 
 public class MainActivity extends AppCompatActivity {
 
-    public Button startRecordButton, stopRecordButton;
-
     private static final int REQUEST_PERMISSION_CODE = 4528;
     private static final int CALL_SCREEN_REQUEST_ID = 64543;
     private static final int MANAGE_EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE = 5000;
-
-    RecordingHelper recordingHelper;
 
     boolean isSystemApp = false;
 
@@ -75,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
             });
             builder.setNegativeButton("Read Post",  (dialog, which) -> {
                 try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.app_name))));
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tutorial_post_link))));
                 } catch (Exception e){
                     Toast.makeText(this, "No app found to open this link", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
