@@ -9,4 +9,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="red">#C50000</color>
     <color name="green">#159C0B</color>
+
+    <color name="hp_theme_color_ld">#FC2258</color>
 </resources>

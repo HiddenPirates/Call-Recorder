@@ -6,4 +6,8 @@
         After Android 9 or greater, it is not possible to record calls by using third party apps. So that\'s why you have manually make this app as a system app. If you don\'t know how to make a third party app to system app, then you should read this tutorial post.
     </string>
     <string name="tutorial_post_link">https://www.droidwin.com/how-to-convert-any-android-app-to-system-app/</string>
+    <string name="header_layout_sub_text">Automatic Call Recorder</string>
+    <string name="app_sharing_message">"Best automatic call recorder ever. Download it from GitHub now. "</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

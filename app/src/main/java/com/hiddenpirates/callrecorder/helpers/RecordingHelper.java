@@ -24,10 +24,13 @@ public class RecordingHelper {
     String finalFileName;
     public static MediaRecorder recorder;
 
+//__________________________________________________________________________________________________
+
     public RecordingHelper(Context context, String phoneNumber){
         this.context = context;
         this.phoneNumber = phoneNumber;
     }
+//__________________________________________________________________________________________________
 
     @SuppressLint("SimpleDateFormat")
     public void startVoiceRecoding() {
@@ -57,7 +60,7 @@ public class RecordingHelper {
 
             recorder = new MediaRecorder();
             recorder.reset();
-            recorder.setAudioSource(MediaRecorder.AudioSource.VOICE_CALL);
+            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             recorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
             recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             recorder.setAudioEncodingBitRate(16);
@@ -68,17 +71,21 @@ public class RecordingHelper {
                 recorder.prepare();
                 recorder.start();
 
-                Toast.makeText(context, "Recording started", Toast.LENGTH_SHORT).show();
-
-            } catch (Exception e) {
+                if (new SharedPrefs(context).isStartRecordingToastEnabled()){
+                    Toast.makeText(context, "Recording started", Toast.LENGTH_SHORT).show();
+                }
+            }
+            catch (Exception e) {
                 e.printStackTrace();
                 Toast.makeText(context, "Recording start failed! " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "startVoiceRecoding: " + e.getMessage());
             }
-        } else {
+        }
+        else {
             Toast.makeText(context, "Storage permission is not granted.", Toast.LENGTH_SHORT).show();
         }
     }
+//--------------------------------------------------------------------------------------------------
 
     public void stopVoiceRecoding() {
 
@@ -87,14 +94,23 @@ public class RecordingHelper {
             recorder.stop();
             recorder.reset();
             recorder = null;
-            Toast.makeText(context, "Recording saved to: " + finalFileName, Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
+
+            if (new SharedPrefs(context).isStopRecordingToastEnabled()){
+                Toast.makeText(context, "Recording saved to: " + finalFileName, Toast.LENGTH_SHORT).show();
+            }
+        }
+        catch (Exception e) {
             e.printStackTrace();
             recorder = null;
-            Toast.makeText(context, "Recording saved", Toast.LENGTH_SHORT).show();
+
+            if (new SharedPrefs(context).isStopRecordingToastEnabled()){
+                Toast.makeText(context, "Recording saved", Toast.LENGTH_SHORT).show();
+            }
             Log.d(TAG, "stopVoiceRecoding: " + e.getMessage());
         }
     }
+
+//__________________________________________________________________________________________________
 
     private boolean checkStorageAccessPermission() {
 

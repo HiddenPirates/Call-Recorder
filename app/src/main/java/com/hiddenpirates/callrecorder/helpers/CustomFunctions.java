@@ -3,6 +3,8 @@ package com.hiddenpirates.callrecorder.helpers;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.view.MenuItem;
@@ -10,9 +12,17 @@ import android.view.MenuItem;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.apache.commons.io.comparator.NameFileComparator;
 import org.jsoup.Jsoup;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 
 import callrecorder.BuildConfig;
@@ -20,7 +30,59 @@ import callrecorder.R;
 
 public class CustomFunctions {
 
-//    -----------------------------------------------------------------
+//__________________________________________________________________________________________________
+
+    public static boolean isSystemApp(Context context){
+
+        boolean isSystemApp = false;
+
+        PackageManager pm = context.getPackageManager();
+        List<ApplicationInfo> installedApps = pm.getInstalledApplications(0);
+
+        for (ApplicationInfo ai: installedApps) {
+
+            if ((ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
+
+                if (ai.packageName.equalsIgnoreCase(context.getPackageName())){
+                    isSystemApp = true;
+                }
+            }
+        }
+
+        return isSystemApp;
+    }
+//__________________________________________________________________________________________________
+
+    public static void sortOldestFilesFirst(File[] files) {
+        Arrays.sort(files, Comparator.comparingLong(File::lastModified));
+    }
+
+    public static void sortNewestFilesFirst(File[] files) {
+        Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
+    }
+
+    public static void sortFilesByNameAscending(File[] files){
+        Arrays.sort(files, NameFileComparator.NAME_COMPARATOR);
+    }
+
+    public static void sortFilesByNameDescending(File[] files){
+        Arrays.sort(files, NameFileComparator.NAME_REVERSE);
+    }
+//__________________________________________________________________________________________________
+    public static String fileSizeFormatter(long size) {
+        if (size <= 0) return "0 Bytes";
+        final String[] units = new String[]{"Bytes", "KB", "MB", "GB", "TB"};
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+    }
+//__________________________________________________________________________________________________
+
+    public static String timeFormatter(Long time) {
+        @SuppressLint("SimpleDateFormat")
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy - hh:mm:ss");
+        return dateFormat.format(time);
+    }
+//__________________________________________________________________________________________________
 
     @SuppressLint("UseCompatLoadingForDrawables")
     public static void checkForUpdate(Context context, MenuItem menuItem) {

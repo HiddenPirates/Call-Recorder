@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="150dp"
+    android:background="@drawable/header_background"
+    android:padding="12dp">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/nav_header_img"
+        android:background="?attr/main_theme_color"
+        android:contentDescription="App Logo"
+        tools:ignore="HardcodedText"
+        android:layout_marginTop="10dp"
+        app:shapeAppearanceOverlay="@style/circle"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/header_layout_sub_text"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:layout_marginTop="5dp"
+        android:shadowColor="@color/purple_700"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/header_layout_version_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Version: 2.3"
+        android:textColor="@color/white"
+        android:layout_marginTop="5dp"
+        android:textSize="15sp"
+        android:shadowColor="@color/purple_700"
+        tools:ignore="HardcodedText" />
+
+</LinearLayout>
