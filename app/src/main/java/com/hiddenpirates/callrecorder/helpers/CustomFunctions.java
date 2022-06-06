@@ -7,6 +7,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.appcompat.app.AlertDialog;
@@ -23,7 +24,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 import callrecorder.BuildConfig;
 import callrecorder.R;
@@ -84,66 +84,62 @@ public class CustomFunctions {
     }
 //__________________________________________________________________________________________________
 
+    public static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        DecimalFormat deciFormat = new DecimalFormat();
+        deciFormat.setMaximumFractionDigits(places);
+        return Double.parseDouble(deciFormat.format(value));
+    }
+//__________________________________________________________________________________________________
+
     @SuppressLint("UseCompatLoadingForDrawables")
     public static void checkForUpdate(Context context, MenuItem menuItem) {
 
+        double nextVersion = Double.parseDouble(BuildConfig.VERSION_NAME) + 0.1;
+        String vTag = "v" + round(nextVersion, 1);
+
+        Log.d("MADARA", "checkForUpdate: " + vTag);
+
         new Thread(() -> {
-
-            String latestVersion;
-            String currentVersion;
-
             try {
-                latestVersion = Objects.requireNonNull(Jsoup.connect("https://play.google.com/store/apps/details?id=" + context.getPackageName() + "&hl=en")
-                        .timeout(30000).get()
-                        .select("div.hAyfc:nth-child(4)>span:nth-child(2) > div:nth-child(1)> span:nth-child(1)").first()).ownText();
+                String document_title = Jsoup.connect("https://github.com/HiddenPirates/Call-Recorder/releases/tag/" + vTag)
+                        .timeout(30000).get().title();
 
-                if (!latestVersion.equals("")) {
-
-                    currentVersion = BuildConfig.VERSION_NAME;
-
-                    double cVersion = Double.parseDouble(currentVersion);
-                    double lVersion = Double.parseDouble(latestVersion);
-
-                    if (lVersion > cVersion) {
-
-                        ((AppCompatActivity) context).runOnUiThread(() -> {
-
-                            menuItem.setEnabled(true);
-
-                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                            builder.setTitle(context.getResources().getString(R.string.app_name));
-                            builder.setMessage("New update found!");
-                            builder.setCancelable(false);
-                            builder.setIcon(context.getResources().getDrawable(R.drawable.ic_get_app));
-                            builder.setPositiveButton("Update", (dialog, which) -> {
-                                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + context.getPackageName())));
-                                dialog.dismiss();
-                            });
-
-                            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-
-                            AlertDialog alert = builder.create();
-                            alert.show();
-
-                        });
-                    } else {
-
-                        ((AppCompatActivity) context).runOnUiThread(() -> {
-
-                            menuItem.setEnabled(true);
-                            simpleAlert(context, "No update found", "You're using the latest version.", "Dismiss", context.getResources().getDrawable(R.drawable.ic_check_circle));
-                        });
-                    }
-                }
-            } catch (IOException e) {
+                Log.d("MADARA", "checkForUpdate: " + document_title);
 
                 ((AppCompatActivity) context).runOnUiThread(() -> {
 
                     menuItem.setEnabled(true);
-                    simpleAlert(context, "Error", "Failed to check for new update.", "Dismiss", context.getResources().getDrawable(R.drawable.ic_error));
-                });
+                    menuItem.setTitle("Check New Update");
 
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle(context.getResources().getString(R.string.app_name));
+                    builder.setMessage("New update found!");
+                    builder.setCancelable(false);
+                    builder.setIcon(context.getResources().getDrawable(R.drawable.nav_header_img));
+                    builder.setPositiveButton("Update", (dialog, which) -> {
+                        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/HiddenPirates/Call-Recorder/releases/tag/" + vTag)));
+                        dialog.dismiss();
+                    });
+
+                    builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
+                });
+            }
+            catch (IOException e) {
                 e.printStackTrace();
+                Log.d("MADARA", "checkForUpdate: " + e.getMessage());
+
+                ((AppCompatActivity) context).runOnUiThread(() -> {
+
+                    menuItem.setEnabled(true);
+                    menuItem.setTitle("Check New Update");
+                    simpleAlert(context, "No update found", "You're using the latest version.", "Dismiss", context.getResources().getDrawable(R.drawable.done_icon));
+                });
             }
         }).start();
     }
