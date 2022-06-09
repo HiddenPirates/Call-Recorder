@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,19 +24,23 @@ import com.hiddenpirates.callrecorder.helpers.CustomFunctions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
+import java.util.Locale;
 
 import callrecorder.R;
 
-public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.MyCustomViewHolder> {
+public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.MyCustomViewHolder> implements Filterable {
 
     Context context;
     JSONArray fileInfos;
+    JSONArray fileInfos2;
 
     public RVAdapterFileList(Context context, JSONArray fileInfos){
         this.context = context;
         this.fileInfos = fileInfos;
+        fileInfos2 = fileInfos;
     }
 
     @NonNull
@@ -42,7 +48,7 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
     public MyCustomViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         LayoutInflater layoutInflater = LayoutInflater.from(context);
-        View view = layoutInflater.inflate(R.layout.sample_rv_layout_main_activitry, parent, false);
+        View view = layoutInflater.inflate(R.layout.sample_rv_layout_main_activity, parent, false);
         return new MyCustomViewHolder(view);
     }
 
@@ -52,9 +58,7 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
         try {
             holder.fileNameTV.setText(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("name"));
 
-            String fileSizeAndDate = CustomFunctions.timeFormatter(Long.parseLong(fileInfos.getJSONObject(holder.getAdapterPosition()).get("modified_date").toString()))
-                    + "\t\t ("
-                    + CustomFunctions.fileSizeFormatter(Long.parseLong(fileInfos.getJSONObject(holder.getAdapterPosition()).get("size").toString())) + ")";
+            String fileSizeAndDate = fileInfos.getJSONObject(holder.getAdapterPosition()).get("modified_date") + "\t\t (" + fileInfos.getJSONObject(holder.getAdapterPosition()).get("size") + ")";
 
             holder.fileInfoTV.setText(fileSizeAndDate);
         }
@@ -146,6 +150,51 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
     public int getItemCount() {
         return fileInfos.length();
     }
+
+    @Override
+    public Filter getFilter() {
+        return filesFilter;
+    }
+
+    private final Filter filesFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence charSequence) {
+
+            JSONArray filteredFileInfos = new JSONArray();
+
+            if (charSequence == null || charSequence.length() == 0){
+                filteredFileInfos = fileInfos2;
+            }
+            else{
+                String search_term = charSequence.toString().trim();
+
+                for (int i = 0; i < fileInfos2.length(); i++){
+
+                    try {
+                        if (fileInfos2.getJSONObject(i).getString("name").toLowerCase().contains(search_term) || fileInfos2.getJSONObject(i).getString("modified_date").toLowerCase().contains(search_term)){
+                            filteredFileInfos.put(fileInfos2.getJSONObject(i));
+                        }
+                    }
+                    catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            FilterResults filterResults = new FilterResults();
+            filterResults.values = filteredFileInfos;
+            filterResults.count = filteredFileInfos.length();
+
+            return filterResults;
+        }
+
+        @SuppressLint("NotifyDataSetChanged")
+        @Override
+        protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+            fileInfos = (JSONArray) filterResults.values;
+            notifyDataSetChanged();
+        }
+    };
 
     public static class MyCustomViewHolder extends RecyclerView.ViewHolder{
 

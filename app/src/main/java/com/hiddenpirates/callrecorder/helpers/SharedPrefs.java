@@ -70,6 +70,6 @@ public class SharedPrefs {
     }
 
     public String getRecordingSortOrder(){
-        return  mPreference.getString("recording_sorting_order", "newest_first");
+        return  mPreference.getString("recording_sorting_order", "Newest");
     }
 }

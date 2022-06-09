@@ -8,6 +8,9 @@
     <string name="tutorial_post_link">https://www.droidwin.com/how-to-convert-any-android-app-to-system-app/</string>
     <string name="header_layout_sub_text">Automatic Call Recorder</string>
     <string name="app_sharing_message">"Best automatic call recorder ever. Download it from GitHub now. "</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="sort_by_new">Newest</string>
+    <string name="sort_by_old">Oldest</string>
+    <string name="sort_by_name_ascending">A-Z (Ascending)</string>
+    <string name="sort_by_name_descending">Z-A (Descending)</string>
 </resources>

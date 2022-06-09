@@ -1,4 +1,11 @@
-package com.hiddenpirates.callrecorder.activities;
+package com.hiddenpirates.callrecorder.activities.settingspages;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.CheckBox;
+import android.widget.PopupMenu;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,14 +14,7 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.Toast;
-
+import com.hiddenpirates.callrecorder.activities.MainActivity;
 import com.hiddenpirates.callrecorder.helpers.SharedPrefs;
 
 import java.util.Objects;
@@ -26,7 +26,8 @@ public class SettingsActivity extends AppCompatActivity {
 
     CheckBox startToastCB, stopToastCB;
     SwitchCompat darkModeOnOffSwitch, recordingOnOffSwitch;
-    CardView recordingSavingLocationPickerCV, recordingSortingOrderCV;
+    CardView recordingSortingOrderCV;
+    TextView savedSortByNameTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +72,7 @@ public class SettingsActivity extends AppCompatActivity {
         stopToastCB.setChecked(sharedPrefs.isStopRecordingToastEnabled());
         darkModeOnOffSwitch.setChecked(sharedPrefs.isDarkModeEnabled());
         recordingOnOffSwitch.setChecked(sharedPrefs.isCallRecordingEnabled());
+        savedSortByNameTV.setText(sharedPrefs.getRecordingSortOrder());
 //..................................................................................................
 
         startToastCB.setOnCheckedChangeListener((compoundButton, isChecked) -> sharedPrefs.saveRecordingStartToastBoolean(isChecked));
@@ -87,14 +89,23 @@ public class SettingsActivity extends AppCompatActivity {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             }
         });
-
+//,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
         recordingOnOffSwitch.setOnCheckedChangeListener((compoundButton, isEnabled) -> sharedPrefs.saveCallRecordingEnabledOrNotBoolean(isEnabled));
+//,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 
-        recordingSavingLocationPickerCV.setOnClickListener(view -> {
-            Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-            i.addCategory(Intent.CATEGORY_DEFAULT);
-            startActivityForResult(i, 9999);
+        recordingSortingOrderCV.setOnClickListener(view -> {
+            PopupMenu popupMenu = new PopupMenu(SettingsActivity.this, view);
+            popupMenu.getMenuInflater().inflate(R.menu.sort_by_popup_menu, popupMenu.getMenu());
+
+            popupMenu.setOnMenuItemClickListener(menuItem -> {
+                sharedPrefs.saveSortRecordingOrder(menuItem.getTitle().toString());
+                savedSortByNameTV.setText(menuItem.getTitle().toString());
+                Toast.makeText(SettingsActivity.this, "Restart the app to see effect.", Toast.LENGTH_LONG).show();
+                return true;
+            });
+            popupMenu.show();
         });
+//,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
     }
 
     @Override
@@ -105,12 +116,6 @@ public class SettingsActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 9999) {
-            Log.d("MADARA", "Result URI " + data.getData());
-            Log.d("MADARA", "" + data.getData().getPath());
-            Log.d("MADARA", "" + data.getDataString());
-        }
     }
 
     //__________________________________________________________________________________________________
@@ -120,7 +125,7 @@ public class SettingsActivity extends AppCompatActivity {
         stopToastCB = findViewById(R.id.stopToastCB);
         darkModeOnOffSwitch = findViewById(R.id.darkModeOnOffSwitch);
         recordingOnOffSwitch = findViewById(R.id.recordingOnOffSwitch);
-        recordingSavingLocationPickerCV = findViewById(R.id.recording_saved_location_cardview);
         recordingSortingOrderCV = findViewById(R.id.recording_sort_order_cardview);
+        savedSortByNameTV = findViewById(R.id.savedSortByNameTV);
     }
 }

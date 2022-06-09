@@ -8,7 +8,8 @@
         android:id="@+id/menu_search_action"
         android:icon="@drawable/ic_search_24"
         app:showAsAction="ifRoom"
-        tools:ignore="HardcodedText" />
+        tools:ignore="HardcodedText"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"/>
 
     <item
         android:title="Settings"

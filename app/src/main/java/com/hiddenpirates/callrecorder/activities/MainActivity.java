@@ -24,6 +24,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
@@ -34,6 +35,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenpirates.callrecorder.activities.settingspages.SettingsActivity;
 import com.hiddenpirates.callrecorder.adapters.RVAdapterFileList;
 import com.hiddenpirates.callrecorder.helpers.CustomFunctions;
 import com.hiddenpirates.callrecorder.helpers.SharedPrefs;
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private RecyclerView allFilesRecyclerView;
+    private RVAdapterFileList rvAdapterFileList;
 
     @SuppressLint({"UseCompatLoadingForDrawables", "SetTextI18n"})
     @Override
@@ -88,6 +91,27 @@ public class MainActivity extends AppCompatActivity {
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, 0, 0);
         drawerLayout.addDrawerListener(toggle);
+        drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+                CustomFunctions.hideKeyboard(MainActivity.this, drawerView);
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+                CustomFunctions.hideKeyboard(MainActivity.this, drawerView);
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
         toggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(item -> {
@@ -199,16 +223,34 @@ public class MainActivity extends AppCompatActivity {
 
                 if (files != null) {
 
+                    String sortOrder = new SharedPrefs(MainActivity.this).getRecordingSortOrder();
+
+                    if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_name_ascending))){
+                        CustomFunctions.sortFilesByNameAscending(files);
+                    }
+                    else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_name_descending))){
+                        CustomFunctions.sortFilesByNameDescending(files);
+                    }
+                    else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_new))){
+                        CustomFunctions.sortNewestFilesFirst(files);
+                    }
+                    else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_old))){
+                        CustomFunctions.sortOldestFilesFirst(files);
+                    }
+                    else{
+                        CustomFunctions.sortNewestFilesFirst(files);
+                    }
+
                     for (File file : files) {
 
-                        if (file.isFile() && FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase("m4a")){
+                        if (file.isFile() && FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase("m4a") && file.length() > 0){
 
                             JSONObject fileInfo = new JSONObject();
 
                             try {
                                 fileInfo.put("name", file.getName());
-                                fileInfo.put("size", file.length());
-                                fileInfo.put("modified_date", file.lastModified());
+                                fileInfo.put("size", CustomFunctions.fileSizeFormatter(file.length()));
+                                fileInfo.put("modified_date", CustomFunctions.timeFormatter(file.lastModified()));
                                 fileInfo.put("absolute_path", file.getAbsolutePath());
 
                                 allFilesInformation.put(fileInfo);
@@ -219,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
 
-                    RVAdapterFileList rvAdapterFileList = new RVAdapterFileList(MainActivity.this, allFilesInformation);
+                    rvAdapterFileList = new RVAdapterFileList(MainActivity.this, allFilesInformation);
                     allFilesRecyclerView.setAdapter(rvAdapterFileList);
 
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -227,6 +269,9 @@ public class MainActivity extends AppCompatActivity {
 
                     allFilesRecyclerView.setLayoutManager(linearLayoutManager);
                     allFilesRecyclerView.setItemAnimator(new DefaultItemAnimator());
+                }
+                else{
+                    Toast.makeText(this, "No files found.", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -240,6 +285,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_dropdown_right_corner, menu);
+
+        MenuItem searchBtn = menu.findItem(R.id.menu_search_action);
+
+        SearchView searchView = (SearchView) searchBtn.getActionView();
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView.setQueryHint("Search recordings...");
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                rvAdapterFileList.getFilter().filter(newText);
+                return false;
+            }
+        });
+
+        searchView.setOnFocusChangeListener((view, b) -> {
+            CustomFunctions.hideKeyboard(MainActivity.this, view);
+            searchView.clearFocus();
+        });
+
         return true;
     }
 

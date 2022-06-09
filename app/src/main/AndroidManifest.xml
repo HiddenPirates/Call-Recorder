@@ -59,9 +59,9 @@
             android:exported="false" />
 
         <activity
-            android:name="com.hiddenpirates.callrecorder.activities.SettingsActivity"
+            android:name="com.hiddenpirates.callrecorder.activities.settingspages.SettingsActivity"
             android:enabled="true"
-            android:exported="true" />
+            android:exported="true"/>
 
         <receiver
             android:name="com.hiddenpirates.callrecorder.receivers.PhoneReceiver"
