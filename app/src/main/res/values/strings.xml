@@ -13,4 +13,7 @@
     <string name="sort_by_old">Oldest</string>
     <string name="sort_by_name_ascending">A-Z (Ascending)</string>
     <string name="sort_by_name_descending">Z-A (Descending)</string>
+    <string name="device_default">Device default</string>
+    <string name="dark_mode">Dark mode</string>
+    <string name="light_mode">Light mode</string>
 </resources>

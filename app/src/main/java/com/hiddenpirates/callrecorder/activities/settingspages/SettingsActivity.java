@@ -25,9 +25,9 @@ import callrecorder.R;
 public class SettingsActivity extends AppCompatActivity {
 
     CheckBox startToastCB, stopToastCB;
-    SwitchCompat darkModeOnOffSwitch, recordingOnOffSwitch;
-    CardView recordingSortingOrderCV;
-    TextView savedSortByNameTV;
+    SwitchCompat recordingOnOffSwitch;
+    CardView appearanceCV, recordingSortingOrderCV;
+    TextView appearanceValueTV, savedSortByNameTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,28 +70,40 @@ public class SettingsActivity extends AppCompatActivity {
 
         startToastCB.setChecked(sharedPrefs.isStartRecordingToastEnabled());
         stopToastCB.setChecked(sharedPrefs.isStopRecordingToastEnabled());
-        darkModeOnOffSwitch.setChecked(sharedPrefs.isDarkModeEnabled());
         recordingOnOffSwitch.setChecked(sharedPrefs.isCallRecordingEnabled());
+        appearanceValueTV.setText(sharedPrefs.getAppearanceValue());
         savedSortByNameTV.setText(sharedPrefs.getRecordingSortOrder());
 //..................................................................................................
 
         startToastCB.setOnCheckedChangeListener((compoundButton, isChecked) -> sharedPrefs.saveRecordingStartToastBoolean(isChecked));
         stopToastCB.setOnCheckedChangeListener((compoundButton, isChecked) -> sharedPrefs.saveRecordingStopToastBoolean(isChecked));
 
-        darkModeOnOffSwitch.setOnCheckedChangeListener((compoundButton, isEnabled) -> {
-
-            sharedPrefs.saveDarkModeOnOffBoolean(isEnabled);
-
-            if (isEnabled){
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            }
-            else{
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            }
-        });
 //,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
         recordingOnOffSwitch.setOnCheckedChangeListener((compoundButton, isEnabled) -> sharedPrefs.saveCallRecordingEnabledOrNotBoolean(isEnabled));
 //,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+
+        appearanceCV.setOnClickListener(view -> {
+            PopupMenu popupMenu = new PopupMenu(SettingsActivity.this, view);
+            popupMenu.getMenuInflater().inflate(R.menu.appearance_value_popup_menu, popupMenu.getMenu());
+
+            popupMenu.setOnMenuItemClickListener(menuItem -> {
+                sharedPrefs.saveAppearanceValue(menuItem.getTitle().toString());
+                appearanceValueTV.setText(menuItem.getTitle().toString());
+
+                if (menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.dark_mode))){
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                }
+                else if (menuItem.getTitle().toString().equalsIgnoreCase(getString(R.string.light_mode))){
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                }
+                else{
+                    Toast.makeText(SettingsActivity.this, "Restart the app to see effect.", Toast.LENGTH_LONG).show();
+                }
+                return true;
+            });
+            popupMenu.show();
+        });
+
 
         recordingSortingOrderCV.setOnClickListener(view -> {
             PopupMenu popupMenu = new PopupMenu(SettingsActivity.this, view);
@@ -123,9 +135,12 @@ public class SettingsActivity extends AppCompatActivity {
     private void initVariables() {
         startToastCB = findViewById(R.id.startToastCB);
         stopToastCB = findViewById(R.id.stopToastCB);
-        darkModeOnOffSwitch = findViewById(R.id.darkModeOnOffSwitch);
         recordingOnOffSwitch = findViewById(R.id.recordingOnOffSwitch);
+
         recordingSortingOrderCV = findViewById(R.id.recording_sort_order_cardview);
         savedSortByNameTV = findViewById(R.id.savedSortByNameTV);
+
+        appearanceCV = findViewById(R.id.appearance_cardview);
+        appearanceValueTV = findViewById(R.id.appearance_value_tv);
     }
 }

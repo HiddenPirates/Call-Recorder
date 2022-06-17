@@ -4,13 +4,17 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.net.Uri;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,14 +24,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.hiddenpirates.callrecorder.helpers.CustomFunctions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.util.Locale;
 
 import callrecorder.R;
 
@@ -52,7 +54,7 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
         return new MyCustomViewHolder(view);
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    @SuppressLint({"NotifyDataSetChanged", "UseCompatLoadingForDrawables"})
     @Override
     public void onBindViewHolder(@NonNull MyCustomViewHolder holder, int position) {
         try {
@@ -138,7 +140,94 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
             });
 
 
-            bottomSheetDialog.findViewById(R.id.renameBtnCV).setOnClickListener(view1 -> Toast.makeText(context, "This button is not working currently. " + holder.getAdapterPosition(), Toast.LENGTH_SHORT).show());
+            bottomSheetDialog.findViewById(R.id.renameBtnCV).setOnClickListener(view1 -> {
+
+                try {
+                    String oldName = fileInfos.getJSONObject(holder.getAdapterPosition()).get("name").toString();
+                    String filePath = fileInfos.getJSONObject(holder.getAdapterPosition()).get("absolute_path").toString();
+
+                    EditText inputField = new EditText(context);
+                    inputField.setHint("Enter new file name...");
+                    inputField.setText(oldName.substring(0, oldName.length() - 4));
+                    inputField.setSingleLine(true);
+                    inputField.setInputType(InputType.TYPE_CLASS_TEXT);
+                    inputField.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.hp_theme_color_ld)));
+                    inputField.setPadding(
+                            context.getResources().getDimensionPixelSize(R.dimen.input_box_padding_lr),
+                            context.getResources().getDimensionPixelSize(R.dimen.input_box_padding_tb),
+                            context.getResources().getDimensionPixelSize(R.dimen.input_box_padding_lr),
+                            context.getResources().getDimensionPixelSize(R.dimen.input_box_padding_tb)
+                    );
+
+                    FrameLayout container = new FrameLayout(context);
+
+                    FrameLayout.LayoutParams params = new  FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    params.leftMargin = context.getResources().getDimensionPixelSize(R.dimen.dialog_margin_left);
+                    params.rightMargin = context.getResources().getDimensionPixelSize(R.dimen.dialog_margin_right);
+                    params.topMargin = context.getResources().getDimensionPixelSize(R.dimen.dialog_margin_top);
+
+                    inputField.setLayoutParams(params);
+
+                    container.addView(inputField);
+
+                    AlertDialog dialog = new AlertDialog.Builder(context)
+                            .setTitle("Rename to:")
+                            .setView(container)
+                            .setCancelable(false)
+                            .setIcon(R.drawable.ic_mode_edit_24)
+                            .setPositiveButton("Rename", (dialogInterface, i) -> {
+
+                                String newName = inputField.getText().toString();
+
+                                if (!newName.equalsIgnoreCase("")){
+
+                                    newName += ".m4a";
+
+                                    File oldNameFile = new File(filePath);
+                                    File newNameFile = new File(oldNameFile.getParent().concat("/" + newName));
+
+                                    if (oldNameFile.renameTo(newNameFile)){
+
+                                        Toast.makeText(context, "File renamed.", Toast.LENGTH_SHORT).show();
+
+                                        JSONObject temp_file_jo = new JSONObject();
+
+                                        try {
+                                            temp_file_jo.put("name", newName);
+                                            temp_file_jo.put("size", fileInfos.getJSONObject(holder.getAdapterPosition()).get("size").toString());
+                                            temp_file_jo.put("modified_date", fileInfos.getJSONObject(holder.getAdapterPosition()).get("modified_date").toString());
+                                            temp_file_jo.put("absolute_path", new File(fileInfos.getJSONObject(holder.getAdapterPosition()).get("absolute_path").toString()).getParent().concat("/" + newName));
+
+//                                            fileInfos.remove(holder.getAdapterPosition());
+                                            fileInfos.put(holder.getAdapterPosition(), temp_file_jo);
+
+                                            notifyDataSetChanged();
+                                        }
+                                        catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    else{
+                                        Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    dialogInterface.dismiss();
+                                }
+                                else{
+                                    Toast.makeText(context, "Please provide a valid name.", Toast.LENGTH_SHORT).show();
+                                }
+
+                            })
+                            .setNegativeButton("Cancel", null)
+                            .create();
+
+                    dialog.show();
+                    bottomSheetDialog.dismiss();
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            });
 
             bottomSheetDialog.show();
 

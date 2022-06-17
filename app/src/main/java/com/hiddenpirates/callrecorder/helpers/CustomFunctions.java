@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Log;
@@ -40,6 +41,12 @@ public class CustomFunctions {
     }
 //__________________________________________________________________________________________________
 
+    public static boolean isDarkModeOn(Context context) {
+        int nightModeFlags = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
+    }
+//__________________________________________________________________________________________________
+
     public static boolean isSystemApp(Context context){
 
         boolean isSystemApp = false;
@@ -62,19 +69,19 @@ public class CustomFunctions {
 //__________________________________________________________________________________________________
 
     public static void sortOldestFilesFirst(File[] files) {
-        Arrays.sort(files, Comparator.comparingLong(File::lastModified));
+        new Thread(() -> Arrays.sort(files, Comparator.comparingLong(File::lastModified))).start();
     }
 
     public static void sortNewestFilesFirst(File[] files) {
-        Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
+        new Thread(() -> Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed())).start();
     }
 
     public static void sortFilesByNameAscending(File[] files){
-        Arrays.sort(files, NameFileComparator.NAME_COMPARATOR);
+        new Thread(() -> Arrays.sort(files, NameFileComparator.NAME_COMPARATOR)).start();
     }
 
     public static void sortFilesByNameDescending(File[] files){
-        Arrays.sort(files, NameFileComparator.NAME_REVERSE);
+        new Thread(() -> Arrays.sort(files, NameFileComparator.NAME_REVERSE)).start();
     }
 //__________________________________________________________________________________________________
     public static String fileSizeFormatter(long size) {
@@ -152,7 +159,28 @@ public class CustomFunctions {
         }).start();
     }
 
-//    ----------------------------------------------------------------------------
+//    .................................
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    public static void checkForUpdateOnStartApp(Context context, View button) {
+
+        double nextVersion = Double.parseDouble(BuildConfig.VERSION_NAME) + 0.1;
+        String vTag = "v" + round(nextVersion, 1);
+
+        new Thread(() -> {
+
+            try {
+                Jsoup.connect("https://github.com/HiddenPirates/Call-Recorder/releases/tag/" + vTag).timeout(30000).get().title();
+                button.setVisibility(View.VISIBLE);
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                Log.d("MADARA", "checkForUpdateOnStartApp: " + e.getMessage());
+            }
+        }).start();
+    }
+
+//    ----------------------------------------------------------------------------------------------
 
     public static void simpleAlert(Context context, String title, String message, String dismissBtn, Drawable drawableIcon) {
 

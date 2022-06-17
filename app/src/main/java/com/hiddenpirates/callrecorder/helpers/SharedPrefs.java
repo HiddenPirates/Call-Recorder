@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
 
+import callrecorder.R;
+
 public class SharedPrefs {
 
     private static final String APP_PREFS_NAME = "CallRecorderPreference";
@@ -11,9 +13,12 @@ public class SharedPrefs {
     private final SharedPreferences mPreference;
     private final SharedPreferences.Editor mPrefEditor;
 
+    private Context context;
+
     public SharedPrefs(Context context) {
         this.mPreference = context.getSharedPreferences(APP_PREFS_NAME, Context.MODE_PRIVATE);
         this.mPrefEditor = mPreference.edit();
+        this.context = context;
     }
 
 //__________________________________________________________________________________________________
@@ -28,18 +33,13 @@ public class SharedPrefs {
         mPrefEditor.commit();
     }
 
-    public void saveDarkModeOnOffBoolean(boolean isOn){
-        mPrefEditor.putBoolean("is_dark_mode_on", isOn);
+    public void saveAppearanceValue(String appearanceValue){
+        mPrefEditor.putString("appearance_value", appearanceValue);
         mPrefEditor.commit();
     }
 
     public void saveCallRecordingEnabledOrNotBoolean(boolean isOn){
         mPrefEditor.putBoolean("is_call_recording_enabled", isOn);
-        mPrefEditor.commit();
-    }
-
-    public void saveRecordingSavingLocation(String location){
-        mPrefEditor.putString("recording_saving_location", location);
         mPrefEditor.commit();
     }
 
@@ -57,19 +57,15 @@ public class SharedPrefs {
         return  mPreference.getBoolean("show_stop_recording_toast", true);
     }
 
-    public boolean isDarkModeEnabled(){
-        return  mPreference.getBoolean("is_dark_mode_on", false);
+    public String getAppearanceValue(){
+        return  mPreference.getString("appearance_value", context.getString(R.string.device_default));
     }
 
     public boolean isCallRecordingEnabled(){
         return  mPreference.getBoolean("is_call_recording_enabled", true);
     }
 
-    public String getRecordingSavingLocation(){
-        return  mPreference.getString("recording_saving_location", Environment.getExternalStorageDirectory().getPath() + "/Call Recorder/");
-    }
-
     public String getRecordingSortOrder(){
-        return  mPreference.getString("recording_sorting_order", "Newest");
+        return  mPreference.getString("recording_sorting_order", context.getString(R.string.sort_by_new));
     }
 }

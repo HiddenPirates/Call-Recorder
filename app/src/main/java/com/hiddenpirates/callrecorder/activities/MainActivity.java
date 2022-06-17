@@ -12,16 +12,18 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SearchView;
@@ -33,6 +35,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.hiddenpirates.callrecorder.activities.settingspages.SettingsActivity;
@@ -42,7 +45,6 @@ import com.hiddenpirates.callrecorder.helpers.SharedPrefs;
 
 import org.apache.commons.io.FilenameUtils;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -57,12 +59,16 @@ public class MainActivity extends AppCompatActivity {
     private static final int CALL_SCREEN_REQUEST_ID = 64543;
     private static final int MANAGE_EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE = 5000;
 
-    boolean doubleBackPressed = false;
+    private boolean doubleBackPressed = false;
 
+    private LinearLayout emptyFileIconContainer, fileLoadingInfoContainer;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private RecyclerView allFilesRecyclerView;
     private RVAdapterFileList rvAdapterFileList;
+    private FloatingActionButton scrollBackToTopBtn;
+    private TextView totalFileLoadedTv;
+
 
     @SuppressLint({"UseCompatLoadingForDrawables", "SetTextI18n"})
     @Override
@@ -71,10 +77,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 //--------------------------------------------------------------------------------------------------
-        if (new SharedPrefs(MainActivity.this).isDarkModeEnabled()){
+        if (new SharedPrefs(MainActivity.this).getAppearanceValue().equalsIgnoreCase(getString(R.string.dark_mode))){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
-        else{
+        else if (new SharedPrefs(MainActivity.this).getAppearanceValue().equalsIgnoreCase(getString(R.string.light_mode))){
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
 //--------------------------------------------------------------------------------------------------
@@ -86,8 +92,23 @@ public class MainActivity extends AppCompatActivity {
 
         initVariables();
 
+//--------------------------------------------------------------------------------------------------
+
         View headView = navigationView.getHeaderView(0);
+
         ((TextView) headView.findViewById(R.id.header_layout_version_tv)).setText("Version: " + BuildConfig.VERSION_NAME);
+
+        Button updateBtnInHeaderLayout = headView.findViewById(R.id.updateBtnInHeaderLayout);
+
+        CustomFunctions.checkForUpdateOnStartApp(this, updateBtnInHeaderLayout);
+
+        updateBtnInHeaderLayout.setOnClickListener(view -> {
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/HiddenPirates/Call-Recorder/releases"));
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
+        });
+
+//--------------------------------------------------------------------------------------------------
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, 0, 0);
         drawerLayout.addDrawerListener(toggle);
@@ -175,34 +196,35 @@ public class MainActivity extends AppCompatActivity {
         });
 
 //        ------------------------------------------------------------------------------------------
-
-        if (!CustomFunctions.isSystemApp(this)){
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-            builder.setTitle(getString(R.string.not_system_app_message_title));
-            builder.setMessage(getString(R.string.not_system_app_message_body));
-            builder.setIcon(R.drawable.ic_error);
-            builder.setCancelable(false);
-            builder.setPositiveButton("Ok", (dialog, which) -> {
-                dialog.dismiss();
-                finishAndRemoveTask();
-            });
-            builder.setNegativeButton("Read Post",  (dialog, which) -> {
-                try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tutorial_post_link))));
-                    new Handler(Looper.getMainLooper()).postDelayed(this::finishAndRemoveTask, 2000);
-                }
-                catch (Exception e){
-                    Toast.makeText(this, "No app found to open this link", Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                    onBackPressed();
-                }
+//
+//        if (!CustomFunctions.isSystemApp(this)){
+//
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//
+//            builder.setTitle(getString(R.string.not_system_app_message_title));
+//            builder.setMessage(getString(R.string.not_system_app_message_body));
+//            builder.setIcon(R.drawable.ic_error);
+//            builder.setCancelable(false);
+//            builder.setPositiveButton("Ok", (dialog, which) -> {
+//                dialog.dismiss();
 //                finishAndRemoveTask();
-            });
-            builder.create();
-            builder.show();
-        }
-        else{
+//            });
+//            builder.setNegativeButton("Read Post",  (dialog, which) -> {
+//                try {
+//                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tutorial_post_link))));
+//                    new Handler(Looper.getMainLooper()).postDelayed(this::finishAndRemoveTask, 2000);
+//                }
+//                catch (Exception e){
+//                    Toast.makeText(this, "No app found to open this link", Toast.LENGTH_SHORT).show();
+//                    dialog.dismiss();
+//                    onBackPressed();
+//                }
+////                finishAndRemoveTask();
+//            });
+//            builder.create();
+//            builder.show();
+//        }
+//        else{
             requestCallScreenPermission();
 
             if (!isPermissionGranted()){
@@ -219,9 +241,15 @@ public class MainActivity extends AppCompatActivity {
                 File path = new File("/sdcard/Call Recorder/");
                 File[] files = path.listFiles();
 
+                Log.d("Madara", files.length + "");
+
                 JSONArray allFilesInformation = new JSONArray();
 
                 if (files != null) {
+
+                    emptyFileIconContainer.setVisibility(View.GONE);
+                    allFilesRecyclerView.setVisibility(View.VISIBLE);
+                    fileLoadingInfoContainer.setVisibility(View.VISIBLE);
 
                     String sortOrder = new SharedPrefs(MainActivity.this).getRecordingSortOrder();
 
@@ -241,46 +269,90 @@ public class MainActivity extends AppCompatActivity {
                         CustomFunctions.sortNewestFilesFirst(files);
                     }
 
-                    for (File file : files) {
 
-                        if (file.isFile() && FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase("m4a") && file.length() > 0){
+                    Handler handler = new Handler();
 
-                            JSONObject fileInfo = new JSONObject();
 
-                            try {
-                                fileInfo.put("name", file.getName());
-                                fileInfo.put("size", CustomFunctions.fileSizeFormatter(file.length()));
-                                fileInfo.put("modified_date", CustomFunctions.timeFormatter(file.lastModified()));
-                                fileInfo.put("absolute_path", file.getAbsolutePath());
+                    new Thread(() -> {
 
-                                allFilesInformation.put(fileInfo);
-                            }
-                            catch (JSONException e) {
-                                e.printStackTrace();
+                        int i = 1;
+
+                        for (File file : files) {
+
+                            int finalI = i;
+
+                            handler.post(() -> totalFileLoadedTv.setText("Loading files " + finalI + "/" + files.length));
+
+                            i++;
+
+                            if (file.isFile() && FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase("m4a") && file.length() > 0){
+
+                                JSONObject fileInfo = new JSONObject();
+
+                                try {
+                                    fileInfo.put("name", file.getName());
+                                    fileInfo.put("size", CustomFunctions.fileSizeFormatter(file.length()));
+                                    fileInfo.put("modified_date", CustomFunctions.timeFormatter(file.lastModified()));
+                                    fileInfo.put("absolute_path", file.getAbsolutePath());
+
+                                    allFilesInformation.put(fileInfo);
+                                }
+                                catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
-                    }
 
-                    rvAdapterFileList = new RVAdapterFileList(MainActivity.this, allFilesInformation);
-                    allFilesRecyclerView.setAdapter(rvAdapterFileList);
+                        handler.post(() -> {
 
-                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
-                    linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                            fileLoadingInfoContainer.setVisibility(View.GONE);
 
-                    allFilesRecyclerView.setLayoutManager(linearLayoutManager);
-                    allFilesRecyclerView.setItemAnimator(new DefaultItemAnimator());
-                }
-                else{
-                    Toast.makeText(this, "No files found.", Toast.LENGTH_SHORT).show();
+                            rvAdapterFileList = new RVAdapterFileList(MainActivity.this, allFilesInformation);
+                            allFilesRecyclerView.setAdapter(rvAdapterFileList);
+
+                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+                            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+                            allFilesRecyclerView.setLayoutManager(linearLayoutManager);
+                            allFilesRecyclerView.setItemAnimator(new DefaultItemAnimator());
+                        });
+
+                    }).start();
+
+
+
+//                  3333333333333333333333333333333333333333333333333333333333333333
+
+                    scrollBackToTopBtn.setOnClickListener(view -> allFilesRecyclerView.scrollToPosition(0));
+
+                    allFilesRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                        @Override
+                        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+
+                            if (newState == RecyclerView.SCROLL_STATE_IDLE) { // No scrolling
+                                new Handler().postDelayed(() -> scrollBackToTopBtn.setVisibility(View.GONE), 2000); // delay of 2 seconds before hiding the fab
+                            }
+                        }
+
+                        @Override
+                        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+
+                            if (dy > 0) { // scrolling down
+                                new Handler().postDelayed(() -> scrollBackToTopBtn.setVisibility(View.GONE), 2000); // delay of 2 seconds before hiding the fab
+                            }
+                            else if (dy < 0) { // scrolling up
+                                scrollBackToTopBtn.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
                 }
             }
 
         }
 //        ------------------------------------------------------------------------------------------
-    }
+//    }
 
 //__________________________________________________________________________________________________
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -423,8 +495,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initVariables(){
+        emptyFileIconContainer = findViewById(R.id.empty_file_icon_container);
+        fileLoadingInfoContainer = findViewById(R.id.file_loading_info_container);
         drawerLayout = findViewById(R.id.drawerLayout);
         navigationView = findViewById(R.id.navigation_drawer);
         allFilesRecyclerView = findViewById(R.id.allFilesRecyclerView);
+        scrollBackToTopBtn = findViewById(R.id.scrollBackToTopBtn);
+        totalFileLoadedTv = findViewById(R.id.total_file_loaded_tv);
     }
 }

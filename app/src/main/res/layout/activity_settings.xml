@@ -72,6 +72,7 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/appearance_cardview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dp"
@@ -80,21 +81,33 @@
         android:foreground="?android:attr/selectableItemBackground"
         android:focusable="true">
 
-      <RelativeLayout
+      <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:padding="10dp">
+          android:paddingStart="10dp"
+          android:paddingEnd="10dp"
+          android:padding="10dp"
+          android:orientation="vertical">
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/darkModeOnOffSwitch"
+        <TextView
+            android:singleLine="true"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layoutDirection="ltr"
-            android:text="Dark mode"
+            android:text="Appearance:"
+            android:textSize="17sp"
             android:textColor="?attr/text_color"
-            android:textSize="17sp" />
+            android:layout_marginBottom="5dp"/>
 
-      </RelativeLayout>
+        <TextView
+            android:id="@+id/appearance_value_tv"
+            android:singleLine="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Device default"
+            android:textSize="13sp"
+            android:textColor="?attr/text_color"/>
+
+      </LinearLayout>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -148,7 +161,7 @@
             android:text="Sort recordings by:"
             android:textSize="17sp"
             android:textColor="?attr/text_color"
-            android:layout_marginBottom="3dp"/>
+            android:layout_marginBottom="5dp"/>
 
         <TextView
             android:id="@+id/savedSortByNameTV"

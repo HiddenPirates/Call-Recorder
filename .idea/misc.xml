@@ -3,6 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Hidden Pirates/My_Files_Pogramms/Android_Projects/Call-Recorder/app/src/main/res/drawable/border_style.xml" value="0.216" />
+        <entry key="..\:/Hidden Pirates/My_Files_Pogramms/Android_Projects/Call-Recorder/app/src/main/res/drawable/shape_for_dialog_box.xml" value="0.216" />
+        <entry key="..\:/Hidden Pirates/My_Files_Pogramms/Android_Projects/Call-Recorder/app/src/main/res/layout/activity_main.xml" value="0.36666666666666664" />
+        <entry key="..\:/Hidden Pirates/My_Files_Pogramms/Android_Projects/Call-Recorder/app/src/main/res/layout/activity_settings.xml" value="0.36666666666666664" />
+        <entry key="..\:/Hidden Pirates/My_Files_Pogramms/Android_Projects/Call-Recorder/app/src/main/res/layout/dialog_rename_file.xml" value="0.36666666666666664" />
+        <entry key="..\:/Hidden Pirates/My_Files_Pogramms/Android_Projects/Call-Recorder/app/src/main/res/layout/header_layout.xml" value="0.36666666666666664" />
+        <entry key="..\:/Hidden Pirates/My_Files_Pogramms/Android_Projects/Call-Recorder/app/src/main/res/menu/appearance_value_popup_menu.xml" value="0.36666666666666664" />
+        <entry key="..\:/Hidden Pirates/My_Files_Pogramms/Android_Projects/Call-Recorder/app/src/main/res/menu/sort_by_popup_menu.xml" value="0.36666666666666664" />
         <entry key="..\:/My_Files_Pogramms/Android_Projects/Call Recorder/app/src/main/res/drawable/ic_baseline_check_circle_24.xml" value="0.229" />
         <entry key="..\:/My_Files_Pogramms/Android_Projects/Call Recorder/app/src/main/res/drawable/ic_get_app.xml" value="0.229" />
         <entry key="..\:/My_Files_Pogramms/Android_Projects/Call Recorder/app/src/main/res/drawable/ic_keyboard_voice.xml" value="0.229" />

@@ -4,8 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
-    android:background="@drawable/header_background"
+    android:layout_height="165dp"
+    android:background="@drawable/header_bg"
     android:padding="12dp">
 
     <com.google.android.material.imageview.ShapeableImageView
@@ -29,15 +29,39 @@
         android:shadowColor="@color/purple_700"
         tools:ignore="HardcodedText" />
 
-    <TextView
-        android:id="@+id/header_layout_version_tv"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Version: 2.3"
-        android:textColor="@color/white"
-        android:layout_marginTop="5dp"
-        android:textSize="15sp"
-        android:shadowColor="@color/purple_700"
-        tools:ignore="HardcodedText" />
+        android:orientation="horizontal"
+        android:layout_marginTop="5dp">
+
+        <TextView
+            android:id="@+id/header_layout_version_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Version: 2.3"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:shadowColor="@color/purple_700"
+            tools:ignore="HardcodedText"
+            android:layout_gravity="center_vertical"/>
+
+        <Button
+            android:id="@+id/updateBtnInHeaderLayout"
+            android:layout_width="85dp"
+            android:layout_height="40dp"
+            android:text="Update"
+            android:textSize="12sp"
+            android:textColor="@color/black"
+            tools:ignore="HardcodedText"
+            android:layout_marginStart="20dp"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/dark_yellow"
+            android:layout_gravity="center_vertical"
+            android:visibility="invisible"/>
+
+    </LinearLayout>
+
+
 
 </LinearLayout>

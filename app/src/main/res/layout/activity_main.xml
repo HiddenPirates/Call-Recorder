@@ -9,7 +9,8 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:ignore="HardcodedText">
 
         <include
             android:id="@+id/main_toolbar"
@@ -23,7 +24,75 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/main_toolbar"
-            android:padding="4dp" />
+            android:padding="4dp"
+            android:visibility="invisible"/>
+
+        <LinearLayout
+            android:id="@+id/empty_file_icon_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            tools:ignore="UseCompoundDrawables" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="120dp"
+                android:maxHeight="120dp"
+                android:src="@drawable/empty_logo"
+                android:contentDescription="Empty"
+                android:adjustViewBounds="true"/>
+
+            <TextView
+                android:layout_marginTop="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:text="No recordings"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/file_loading_info_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="invisible">
+
+            <ProgressBar
+                android:id="@+id/total_file_loading_progressbar"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:indeterminateTint="?attr/main_theme_color" />
+
+            <TextView
+                android:id="@+id/total_file_loaded_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:text="Loading files 12546"
+                android:textColor="?attr/text_color"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/scrollBackToTopBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginEnd="25dp"
+            android:layout_marginBottom="25dp"
+            android:adjustViewBounds="true"
+            android:backgroundTint="?attr/main_theme_color"
+            android:contentDescription="Scroll to Top"
+            android:src="@drawable/ic_arrow_upward"
+            app:borderWidth="0dp"
+            app:fabSize="normal"
+            app:tint="@color/white"
+            android:visibility="gone"/>
 
     </RelativeLayout>
 

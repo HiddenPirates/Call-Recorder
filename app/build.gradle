@@ -3,14 +3,14 @@ plugins {
 }
 
 android {
-    compileSdk 31
+    compileSdk 32
 
     defaultConfig {
         applicationId "com.hiddenpirates.callrecorder"
         minSdk 29
-        targetSdk 31
-        versionCode 6
-        versionName "1.6"
+        targetSdk 32
+        versionCode 8
+        versionName "1.8"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
