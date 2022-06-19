@@ -2,6 +2,8 @@ package com.hiddenpirates.callrecorder.helpers;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -13,10 +15,12 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.apache.commons.io.comparator.LastModifiedFileComparator;
 import org.apache.commons.io.comparator.NameFileComparator;
 import org.jsoup.Jsoup;
 
@@ -26,7 +30,6 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import callrecorder.BuildConfig;
@@ -69,19 +72,21 @@ public class CustomFunctions {
 //__________________________________________________________________________________________________
 
     public static void sortOldestFilesFirst(File[] files) {
-        new Thread(() -> Arrays.sort(files, Comparator.comparingLong(File::lastModified))).start();
+        new Thread(() -> Arrays.sort(files, LastModifiedFileComparator.LASTMODIFIED_COMPARATOR)).start();
+//        Arrays.sort(files, LastModifiedFileComparator.LASTMODIFIED_COMPARATOR);
     }
 
     public static void sortNewestFilesFirst(File[] files) {
-        new Thread(() -> Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed())).start();
+        Arrays.sort(files, LastModifiedFileComparator.LASTMODIFIED_REVERSE);
+//        new Thread(() -> Arrays.sort(files, LastModifiedFileComparator.LASTMODIFIED_REVERSE)).start();
     }
 
     public static void sortFilesByNameAscending(File[] files){
-        new Thread(() -> Arrays.sort(files, NameFileComparator.NAME_COMPARATOR)).start();
+        Arrays.sort(files, NameFileComparator.NAME_COMPARATOR);
     }
 
     public static void sortFilesByNameDescending(File[] files){
-        new Thread(() -> Arrays.sort(files, NameFileComparator.NAME_REVERSE)).start();
+        Arrays.sort(files, NameFileComparator.NAME_REVERSE);
     }
 //__________________________________________________________________________________________________
     public static String fileSizeFormatter(long size) {
@@ -206,5 +211,22 @@ public class CustomFunctions {
 
         alert.show();
     }
-//    ----------------------------------------------------------------------------
+//    ----------------------------------------------------------------------------------------------
+
+    public static void copyTextToClipboard(Context context, String text){
+
+        ClipboardManager clipboardManager = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clipData = ClipData.newPlainText(null, text);
+
+        if (clipboardManager != null){
+
+            clipboardManager.setPrimaryClip(clipData);
+            Toast.makeText(context, "Copied to clipboard.", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Toast.makeText(context, context.getString(R.string.report_issue_text), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+//    ----------------------------------------------------------------------------------------------
 }

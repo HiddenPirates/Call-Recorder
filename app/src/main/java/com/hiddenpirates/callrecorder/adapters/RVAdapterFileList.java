@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.hiddenpirates.callrecorder.helpers.ViewDialog;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -226,6 +227,18 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
                 }
                 catch (JSONException e) {
                     e.printStackTrace();
+                }
+            });
+
+
+            bottomSheetDialog.findViewById(R.id.infoBtnCV).setOnClickListener(view1 -> {
+                try {
+                    new ViewDialog().showFileInfoDialog(context, fileInfos.getJSONObject(holder.getAdapterPosition()));
+                    bottomSheetDialog.dismiss();
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                    Toast.makeText(context, "Something went wrong. Please report this issue.", Toast.LENGTH_SHORT).show();
                 }
             });
 

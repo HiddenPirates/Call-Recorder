@@ -28,6 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -66,8 +67,9 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private RecyclerView allFilesRecyclerView;
     private RVAdapterFileList rvAdapterFileList;
-    private FloatingActionButton scrollBackToTopBtn;
+    private FloatingActionButton scrollBackToTopBtn, scrollToBottomBtn;
     private TextView totalFileLoadedTv;
+    private CardView openInFileManagerCV;
 
 
     @SuppressLint({"UseCompatLoadingForDrawables", "SetTextI18n"})
@@ -251,29 +253,29 @@ public class MainActivity extends AppCompatActivity {
                     allFilesRecyclerView.setVisibility(View.VISIBLE);
                     fileLoadingInfoContainer.setVisibility(View.VISIBLE);
 
-                    String sortOrder = new SharedPrefs(MainActivity.this).getRecordingSortOrder();
-
-                    if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_name_ascending))){
-                        CustomFunctions.sortFilesByNameAscending(files);
-                    }
-                    else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_name_descending))){
-                        CustomFunctions.sortFilesByNameDescending(files);
-                    }
-                    else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_new))){
-                        CustomFunctions.sortNewestFilesFirst(files);
-                    }
-                    else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_old))){
-                        CustomFunctions.sortOldestFilesFirst(files);
-                    }
-                    else{
-                        CustomFunctions.sortNewestFilesFirst(files);
-                    }
-
 
                     Handler handler = new Handler();
 
 
                     new Thread(() -> {
+
+                        String sortOrder = new SharedPrefs(MainActivity.this).getRecordingSortOrder();
+
+                        if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_name_ascending))){
+                            CustomFunctions.sortFilesByNameAscending(files);
+                        }
+                        else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_name_descending))){
+                            CustomFunctions.sortFilesByNameDescending(files);
+                        }
+                        else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_new))){
+                            CustomFunctions.sortNewestFilesFirst(files);
+                        }
+                        else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_old))){
+                            CustomFunctions.sortOldestFilesFirst(files);
+                        }
+                        else{
+                            CustomFunctions.sortNewestFilesFirst(files);
+                        }
 
                         int i = 1;
 
@@ -321,9 +323,20 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-//                  3333333333333333333333333333333333333333333333333333333333333333
+//                  33333333333333333333333333333333333333333333333333333333333333333333333333333333
+
+                    openInFileManagerCV.setOnClickListener(view -> {
+
+                        Uri selectedUri = Uri.parse(Environment.getExternalStorageDirectory() + "/Call Recorder/");
+                        Intent intent = new Intent(Intent.ACTION_PICK);
+                        intent.setDataAndType(selectedUri, "*/*");
+                        startActivity(intent);
+                    });
+
+//                  33333333333333333333333333333333333333333333333333333333333333333333333333333333
 
                     scrollBackToTopBtn.setOnClickListener(view -> allFilesRecyclerView.scrollToPosition(0));
+                    scrollToBottomBtn.setOnClickListener(view -> allFilesRecyclerView.scrollToPosition(allFilesRecyclerView.getAdapter().getItemCount() - 1));
 
                     allFilesRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
                         @Override
@@ -331,6 +344,7 @@ public class MainActivity extends AppCompatActivity {
 
                             if (newState == RecyclerView.SCROLL_STATE_IDLE) { // No scrolling
                                 new Handler().postDelayed(() -> scrollBackToTopBtn.setVisibility(View.GONE), 2000); // delay of 2 seconds before hiding the fab
+                                new Handler().postDelayed(() -> scrollToBottomBtn.setVisibility(View.GONE), 2000); // delay of 2 seconds before hiding the fab
                             }
                         }
 
@@ -338,10 +352,12 @@ public class MainActivity extends AppCompatActivity {
                         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
 
                             if (dy > 0) { // scrolling down
-                                new Handler().postDelayed(() -> scrollBackToTopBtn.setVisibility(View.GONE), 2000); // delay of 2 seconds before hiding the fab
+                                scrollBackToTopBtn.setVisibility(View.GONE);
+                                scrollToBottomBtn.setVisibility(View.VISIBLE);
                             }
                             else if (dy < 0) { // scrolling up
                                 scrollBackToTopBtn.setVisibility(View.VISIBLE);
+                                scrollToBottomBtn.setVisibility(View.GONE);
                             }
                         }
                     });
@@ -501,6 +517,8 @@ public class MainActivity extends AppCompatActivity {
         navigationView = findViewById(R.id.navigation_drawer);
         allFilesRecyclerView = findViewById(R.id.allFilesRecyclerView);
         scrollBackToTopBtn = findViewById(R.id.scrollBackToTopBtn);
+        scrollToBottomBtn = findViewById(R.id.scrollToBottomBtn);
         totalFileLoadedTv = findViewById(R.id.total_file_loaded_tv);
+        openInFileManagerCV = findViewById(R.id.openInFileManagerCV);
     }
 }

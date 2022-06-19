@@ -6,13 +6,57 @@ import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.cardview.widget.CardView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 
 import callrecorder.R;
 
 public class ViewDialog {
+
+    public void showFileInfoDialog(Context context, JSONObject fileInfoJObj){
+
+        final Dialog dialog = new Dialog(context);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(true);
+        dialog.setContentView(R.layout.dialog_property_file);
+        dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+
+        TextView fileSizeTV, fileLastModifiedTV, fileNameTV, filePathTV;
+        CardView filePathCV, fileNameCV;
+
+        fileSizeTV = dialog.findViewById(R.id.fileSizeTVinFilePropertyDialog);
+        fileLastModifiedTV = dialog.findViewById(R.id.fileModifiedTVinFilePropertyDialog);
+        fileNameTV = dialog.findViewById(R.id.fileNameTVinFilePropertyDialog);
+        filePathTV = dialog.findViewById(R.id.fileLocationTVinFilePropertyDialog);
+
+        fileNameCV = dialog.findViewById(R.id.fileNameCVinFilePropertyDialog);
+        filePathCV = dialog.findViewById(R.id.filePathCVinFilePropertyDialog);
+
+        try {
+            fileSizeTV.setText(fileInfoJObj.get("size").toString());
+            fileLastModifiedTV.setText(fileInfoJObj.getString("modified_date"));
+            fileNameTV.setText(fileInfoJObj.getString("name"));
+            filePathTV.setText(fileInfoJObj.getString("absolute_path"));
+
+            fileNameCV.setOnClickListener(view -> CustomFunctions.copyTextToClipboard(context, fileNameTV.getText().toString()));
+            filePathCV.setOnClickListener(view -> CustomFunctions.copyTextToClipboard(context, filePathTV.getText().toString()));
+
+        }
+        catch (JSONException e) {
+            e.printStackTrace();
+            dialog.dismiss();
+            Toast.makeText(context, context.getString(R.string.report_issue_text), Toast.LENGTH_SHORT).show();
+        }
+
+        dialog.show();
+    }
 
     public void showRenameFileInputDialog(Context context, String oldName, String filePath) {
 

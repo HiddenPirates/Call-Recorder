@@ -71,9 +71,35 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="25dp"
-                android:text="Loading files 12546"
+                android:text="Files are sorting..."
                 android:textColor="?attr/text_color"
                 android:textSize="16sp" />
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/openInFileManagerCV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                xmlns:card_view="http://schemas.android.com/apk/res-auto"
+                card_view:cardElevation="0dp"
+                card_view:cardUseCompatPadding="false"
+                android:clickable="true"
+                app:cardBackgroundColor="@android:color/transparent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Open in File Manager"
+                    android:textSize="17sp"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:textColor="@color/light_link_blue" />
+
+            </androidx.cardview.widget.CardView>
+
 
         </LinearLayout>
 
@@ -89,6 +115,23 @@
             android:backgroundTint="?attr/main_theme_color"
             android:contentDescription="Scroll to Top"
             android:src="@drawable/ic_arrow_upward"
+            app:borderWidth="0dp"
+            app:fabSize="normal"
+            app:tint="@color/white"
+            android:visibility="gone"/>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/scrollToBottomBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginEnd="25dp"
+            android:layout_marginBottom="25dp"
+            android:adjustViewBounds="true"
+            android:backgroundTint="?attr/main_theme_color"
+            android:contentDescription="Scroll to Top"
+            android:src="@drawable/ic_arrow_downward"
             app:borderWidth="0dp"
             app:fabSize="normal"
             app:tint="@color/white"
