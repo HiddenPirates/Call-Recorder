@@ -12,17 +12,19 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
+import com.hiddenpirates.callrecorder.activities.MainActivity;
+
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class RecordingHelper {
 
-    private static final String TAG = "MADARA";
+    private static final String TAG = MainActivity.TAG;
     Context context;
-    private final String phoneNumber;
-    String finalFileName;
     public static MediaRecorder recorder;
+    private final String phoneNumber;
+    private String finalFileName;
 
 //__________________________________________________________________________________________________
 
@@ -37,9 +39,7 @@ public class RecordingHelper {
 
         if (checkStorageAccessPermission()) {
 
-            String app_content_directory_name = "/Call Recorder/";
-
-            File dir = new File(Environment.getExternalStorageDirectory().getPath() + app_content_directory_name);
+            File dir = new File(MainActivity.RECORDING_SAVING_LOCATION);
 
             if (!dir.exists()) {
                 if (!dir.mkdirs()){
@@ -47,7 +47,7 @@ public class RecordingHelper {
                 }
             }
 
-            String directoryPath = Environment.getExternalStorageDirectory().getPath() + app_content_directory_name;
+            String directoryPath = MainActivity.RECORDING_SAVING_LOCATION;
 
             String fileName = ContactsHelper.getContactNameByPhoneNumber(phoneNumber, context)
                     + "_("

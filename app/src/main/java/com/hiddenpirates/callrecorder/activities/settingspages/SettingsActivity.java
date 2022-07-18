@@ -14,13 +14,12 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 
+import com.hiddenpirates.callrecorder.BuildConfig;
+import com.hiddenpirates.callrecorder.R;
 import com.hiddenpirates.callrecorder.activities.MainActivity;
 import com.hiddenpirates.callrecorder.helpers.SharedPrefs;
 
 import java.util.Objects;
-
-import callrecorder.BuildConfig;
-import callrecorder.R;
 
 public class SettingsActivity extends AppCompatActivity {
 

@@ -27,6 +27,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
@@ -40,6 +41,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
+import com.hiddenpirates.callrecorder.BuildConfig;
+import com.hiddenpirates.callrecorder.R;
 import com.hiddenpirates.callrecorder.activities.settingspages.SettingsActivity;
 import com.hiddenpirates.callrecorder.adapters.RVAdapterFileList;
 import com.hiddenpirates.callrecorder.helpers.CustomFunctions;
@@ -52,14 +55,14 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.Objects;
 
-import callrecorder.BuildConfig;
-import callrecorder.R;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_PERMISSION_CODE = 4528;
     private static final int CALL_SCREEN_REQUEST_ID = 64543;
     private static final int MANAGE_EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE = 5000;
+    public static final String TAG = "Madara";
+    public static final String RECORDING_SAVING_LOCATION = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath() + "/Call Recorder/";
 
     private boolean doubleBackPressed = false;
 
@@ -71,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton scrollBackToTopBtn, scrollToBottomBtn;
     private TextView totalFileLoadedTv;
     private CardView openInFileManagerCV;
+
+    private final JSONArray allFilesInformationJsonArray = new JSONArray();
 
 
     @SuppressLint({"UseCompatLoadingForDrawables", "SetTextI18n"})
@@ -88,12 +93,12 @@ public class MainActivity extends AppCompatActivity {
         }
 //--------------------------------------------------------------------------------------------------
 
+        initVariables();
+
         getSupportFragmentManager();
         Toolbar toolbar = findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle(getResources().getString(R.string.app_name));
-
-        initVariables();
 
 //--------------------------------------------------------------------------------------------------
 
@@ -106,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         CustomFunctions.checkForUpdateOnStartApp(this, updateBtnInHeaderLayout);
 
         updateBtnInHeaderLayout.setOnClickListener(view -> {
-            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/HiddenPirates/Call-Recorder/releases"));
+            Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_release_page_link)));
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(i);
         });
@@ -155,41 +160,41 @@ public class MainActivity extends AppCompatActivity {
             }
             else if (item.getItemId() == R.id.donate_me_action) {
 
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://donate.hiddenpirates.com")));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.donation_page_link))));
                 return true;
 
             } else if (item.getItemId() == R.id.send_mail_action) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/HiddenPirates/Call-Recorder/issues/")));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.app_issue_page_link))));
                 return true;
 
             } else if (item.getItemId() == R.id.share_app_action) {
 
                 intent1 = new Intent(Intent.ACTION_SEND);
                 intent1.setType("text/plain");
-                intent1.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.app_sharing_message) + "\n https://github.com/HiddenPirates/Call-Recorder/releases/");
+                intent1.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.app_sharing_message) + "\n" + getString(R.string.github_release_page_link));
                 startActivity(Intent.createChooser(intent1, "Share via"));
                 return true;
 
             } else if (item.getItemId() == R.id.more_app_action) {
 
-                intent1 = new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/dev?id=5002650060821952731"));
+                intent1 = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.more_apps_in_play_store)));
                 startActivity(intent1);
                 return true;
 
             } else if (item.getItemId() == R.id.visitWeb_app_action) {
 
-                intent1 = new Intent(Intent.ACTION_VIEW, Uri.parse("https://hiddenpirates.com"));
+                intent1 = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.website_link)));
                 startActivity(intent1);
                 return true;
 
             } else if (item.getItemId() == R.id.visitGitHub_app_action) {
-                intent1 = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/HiddenPirates"));
+                intent1 = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_profile_link)));
                 startActivity(intent1);
                 return true;
 
             } else if (item.getItemId() == R.id.visitFb_app_action) {
 
-                intent1 = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.facebook.com/TeamHiddenPirates"));
+                intent1 = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.facebook_page_link)));
                 startActivity(intent1);
                 return true;
 
@@ -222,7 +227,6 @@ public class MainActivity extends AppCompatActivity {
                     dialog.dismiss();
                     onBackPressed();
                 }
-//                finishAndRemoveTask();
             });
             builder.create();
             builder.show();
@@ -234,21 +238,18 @@ public class MainActivity extends AppCompatActivity {
                 askPermission();
             }
             else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    if (!Environment.isExternalStorageManager()){
-                        requestAllFileAccessPermission();
-                    }
+
+                File recordingFolderPath = new File(RECORDING_SAVING_LOCATION);
+
+                if (!recordingFolderPath.exists()){
+                    recordingFolderPath.mkdirs();
                 }
 
-                @SuppressLint("SdCardPath")
-                File path = new File("/sdcard/Call Recorder/");
-                File[] files = path.listFiles();
+                File[] recordedFiles = recordingFolderPath.listFiles();
 
-                Log.d("Madara", files.length + "");
+                Log.d(TAG, recordedFiles.length + "");
 
-                JSONArray allFilesInformation = new JSONArray();
-
-                if (files != null) {
+                if (recordedFiles != null && recordedFiles.length > 0) {
 
                     emptyFileIconContainer.setVisibility(View.GONE);
                     allFilesRecyclerView.setVisibility(View.VISIBLE);
@@ -263,42 +264,42 @@ public class MainActivity extends AppCompatActivity {
                         String sortOrder = new SharedPrefs(MainActivity.this).getRecordingSortOrder();
 
                         if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_name_ascending))){
-                            CustomFunctions.sortFilesByNameAscending(files);
+                            CustomFunctions.sortFilesByNameAscending(recordedFiles);
                         }
                         else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_name_descending))){
-                            CustomFunctions.sortFilesByNameDescending(files);
+                            CustomFunctions.sortFilesByNameDescending(recordedFiles);
                         }
                         else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_new))){
-                            CustomFunctions.sortNewestFilesFirst(files);
+                            CustomFunctions.sortNewestFilesFirst(recordedFiles);
                         }
                         else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_old))){
-                            CustomFunctions.sortOldestFilesFirst(files);
+                            CustomFunctions.sortOldestFilesFirst(recordedFiles);
                         }
                         else{
-                            CustomFunctions.sortNewestFilesFirst(files);
+                            CustomFunctions.sortNewestFilesFirst(recordedFiles);
                         }
 
                         int i = 1;
 
-                        for (File file : files) {
+                        for (File recordFile : recordedFiles) {
 
                             int finalI = i;
 
-                            handler.post(() -> totalFileLoadedTv.setText("Loading files " + finalI + "/" + files.length));
+                            handler.post(() -> totalFileLoadedTv.setText("Loading files " + finalI + "/" + recordedFiles.length));
 
                             i++;
 
-                            if (file.isFile() && FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase("m4a") && file.length() > 0){
+                            if (recordFile.isFile() && FilenameUtils.getExtension(recordFile.getAbsolutePath()).equalsIgnoreCase("m4a") && recordFile.length() > 0){
 
                                 JSONObject fileInfo = new JSONObject();
 
                                 try {
-                                    fileInfo.put("name", file.getName());
-                                    fileInfo.put("size", CustomFunctions.fileSizeFormatter(file.length()));
-                                    fileInfo.put("modified_date", CustomFunctions.timeFormatter(file.lastModified()));
-                                    fileInfo.put("absolute_path", file.getAbsolutePath());
+                                    fileInfo.put("name", recordFile.getName());
+                                    fileInfo.put("size", CustomFunctions.fileSizeFormatter(recordFile.length()));
+                                    fileInfo.put("modified_date", CustomFunctions.timeFormatter(recordFile.lastModified()));
+                                    fileInfo.put("absolute_path", recordFile.getAbsolutePath());
 
-                                    allFilesInformation.put(fileInfo);
+                                    allFilesInformationJsonArray.put(fileInfo);
                                 }
                                 catch (Exception e) {
                                     e.printStackTrace();
@@ -308,16 +309,24 @@ public class MainActivity extends AppCompatActivity {
 
                         handler.post(() -> {
 
-                            fileLoadingInfoContainer.setVisibility(View.GONE);
+                            if (allFilesInformationJsonArray.length() > 0){
 
-                            rvAdapterFileList = new RVAdapterFileList(MainActivity.this, allFilesInformation);
-                            allFilesRecyclerView.setAdapter(rvAdapterFileList);
+                                fileLoadingInfoContainer.setVisibility(View.GONE);
 
-                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
-                            linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                                rvAdapterFileList = new RVAdapterFileList(MainActivity.this, allFilesInformationJsonArray);
+                                allFilesRecyclerView.setAdapter(rvAdapterFileList);
 
-                            allFilesRecyclerView.setLayoutManager(linearLayoutManager);
-                            allFilesRecyclerView.setItemAnimator(new DefaultItemAnimator());
+                                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
+                                linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+
+                                allFilesRecyclerView.setLayoutManager(linearLayoutManager);
+                                allFilesRecyclerView.setItemAnimator(new DefaultItemAnimator());
+                            }
+                            else {
+                                emptyFileIconContainer.setVisibility(View.VISIBLE);
+                                allFilesRecyclerView.setVisibility(View.GONE);
+                                fileLoadingInfoContainer.setVisibility(View.GONE);
+                            }
                         });
 
                     }).start();
@@ -328,7 +337,7 @@ public class MainActivity extends AppCompatActivity {
 
                     openInFileManagerCV.setOnClickListener(view -> {
 
-                        Uri selectedUri = Uri.parse(Environment.getExternalStorageDirectory() + "/Call Recorder/");
+                        Uri selectedUri = Uri.parse(RECORDING_SAVING_LOCATION);
                         Intent intent = new Intent(Intent.ACTION_PICK);
                         intent.setDataAndType(selectedUri, "*/*");
                         startActivity(intent);
@@ -376,6 +385,10 @@ public class MainActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_dropdown_right_corner, menu);
 
         MenuItem searchBtn = menu.findItem(R.id.menu_search_action);
+
+        if (allFilesInformationJsonArray.length() <= 0){
+            searchBtn.setVisible(false);
+        }
 
         SearchView searchView = (SearchView) searchBtn.getActionView();
         searchView.setMaxWidth(Integer.MAX_VALUE);
@@ -469,7 +482,13 @@ public class MainActivity extends AppCompatActivity {
         }
         else{
             Toast.makeText(this, "Please allow all permission", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS));
+
+            try {
+                startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + getPackageName())));
+            }
+            catch (Exception e){
+                CustomFunctions.simpleAlert(this, "Error", getString(R.string.app_info_page_opening_failed_message), "Ok",  AppCompatResources.getDrawable(this, R.drawable.ic_error));
+            }
         }
     }
 

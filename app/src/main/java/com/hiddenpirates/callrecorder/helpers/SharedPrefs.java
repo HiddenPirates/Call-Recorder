@@ -2,9 +2,8 @@ package com.hiddenpirates.callrecorder.helpers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Environment;
 
-import callrecorder.R;
+import com.hiddenpirates.callrecorder.R;
 
 public class SharedPrefs {
 
@@ -13,7 +12,7 @@ public class SharedPrefs {
     private final SharedPreferences mPreference;
     private final SharedPreferences.Editor mPrefEditor;
 
-    private Context context;
+    private final Context context;
 
     public SharedPrefs(Context context) {
         this.mPreference = context.getSharedPreferences(APP_PREFS_NAME, Context.MODE_PRIVATE);

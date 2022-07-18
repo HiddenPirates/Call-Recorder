@@ -24,6 +24,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.hiddenpirates.callrecorder.R;
+import com.hiddenpirates.callrecorder.activities.MainActivity;
 import com.hiddenpirates.callrecorder.helpers.ViewDialog;
 
 import org.json.JSONArray;
@@ -32,10 +34,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 
-import callrecorder.R;
-
 public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.MyCustomViewHolder> implements Filterable {
 
+    private static final String TAG = MainActivity.TAG;
     Context context;
     JSONArray fileInfos;
     JSONArray fileInfos2;
@@ -80,7 +81,7 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
             }
             catch (Exception e){
                 e.printStackTrace();
-                Log.d("MADARA", e.getMessage());
+                Log.d(TAG, e.getMessage());
             }
         });
 //        ------------------------------------------------------------------------------------------
@@ -102,7 +103,7 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
                 }
                 catch (Exception e){
                     e.printStackTrace();
-                    Log.d("MADARA", e.getMessage());
+                    Log.d(TAG, e.getMessage());
                 }
             });
 

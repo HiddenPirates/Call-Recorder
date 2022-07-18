@@ -1,14 +1,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="callrecorder">
+    package="com.hiddenpirates.callrecorder"
+    tools:ignore="ScopedStorage,ProtectedPermissions,QueryAllPackagesPermission,ExportedService">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
-    <uses-permission android:name="android.permission.CAPTURE_AUDIO_OUTPUT" tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAPTURE_AUDIO_OUTPUT" />
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
@@ -17,7 +18,7 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" tools:ignore="QueryAllPackagesPermission" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application
@@ -44,7 +45,7 @@
         </provider>
 
         <activity
-            android:name="com.hiddenpirates.callrecorder.activities.MainActivity"
+            android:name=".activities.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -57,17 +58,17 @@
         </activity>
 
         <activity
-            android:name="com.hiddenpirates.callrecorder.activities.StartForegroundActivity"
+            android:name=".activities.StartForegroundActivity"
             android:enabled="true"
             android:exported="false" />
 
         <activity
-            android:name="com.hiddenpirates.callrecorder.activities.settingspages.SettingsActivity"
+            android:name=".activities.settingspages.SettingsActivity"
             android:enabled="true"
             android:exported="true"/>
 
         <receiver
-            android:name="com.hiddenpirates.callrecorder.receivers.PhoneReceiver"
+            android:name=".receivers.PhoneReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter android:priority="9999">
@@ -76,7 +77,7 @@
         </receiver>
 
         <service
-            android:name="com.hiddenpirates.callrecorder.services.MyCallScreeningService"
+            android:name=".services.MyCallScreeningService"
             android:enabled="true"
             android:exported="true"
             android:permission="android.permission.BIND_SCREENING_SERVICE">
@@ -86,11 +87,10 @@
         </service>
 
         <service
-            android:name="com.hiddenpirates.callrecorder.services.RecordingService"
+            android:name=".services.RecordingService"
             android:enabled="true"
             android:exported="true"
-            android:foregroundServiceType="microphone"
-            tools:ignore="ExportedService" />
+            android:foregroundServiceType="microphone" />
 
     </application>
 </manifest>

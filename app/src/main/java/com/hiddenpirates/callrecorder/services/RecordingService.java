@@ -12,10 +12,10 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.hiddenpirates.callrecorder.BuildConfig;
+import com.hiddenpirates.callrecorder.R;
 import com.hiddenpirates.callrecorder.helpers.RecordingHelper;
 
-import callrecorder.BuildConfig;
-import callrecorder.R;
 
 public class RecordingService extends Service {
 

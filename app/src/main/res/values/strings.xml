@@ -3,7 +3,7 @@
 
     <string name="not_system_app_message_title">App is not a system app.</string>
     <string name="not_system_app_message_body">
-        After Android 9 or greater, it is not possible to record calls by using third party apps. So that\'s why you have manually make this app as a system app. If you don\'t know how to make a third party app to system app, then you should read this tutorial post.
+        After Android 9 or greater, it is not possible to record calls by using third party apps. So that\'s why you have to manually make this app as a system app. If you don\'t know how to make a third party app to system app, then you should read this tutorial post.
     </string>
     <string name="tutorial_post_link">https://www.droidwin.com/how-to-convert-any-android-app-to-system-app/</string>
     <string name="header_layout_sub_text">Automatic Call Recorder</string>
@@ -19,4 +19,15 @@
     <string name="compose_shortcut_short_label_for_settings">Settings</string>
     <string name="compose_shortcut_long_label_for_settings">Call Recorder settings</string>
     <string name="report_issue_text">Something went wrong. Please report this issue.</string>
+
+    <string name="github_release_page_link">https://github.com/HiddenPirates/Call-Recorder/releases</string>
+    <string name="github_release_tag_page_link">https://github.com/HiddenPirates/Call-Recorder/releases/tag/</string>
+
+    <string name="app_issue_page_link">https://github.com/HiddenPirates/Call-Recorder/issues/</string>
+    <string name="more_apps_in_play_store">https://play.google.com/store/search?q=pub: Hidden Pirates&amp;c=apps</string>
+    <string name="website_link">https://hiddenpirates.com</string>
+    <string name="github_profile_link">https://github.com/HiddenPirates</string>
+    <string name="facebook_page_link">https://www.facebook.com/TeamHiddenPirates</string>
+    <string name="donation_page_link">https://donate.hiddenpirates.com</string>
+    <string name="app_info_page_opening_failed_message">Failed to open application setting info page. Please open app info page and allow all permissions manually from settings.</string>
 </resources>

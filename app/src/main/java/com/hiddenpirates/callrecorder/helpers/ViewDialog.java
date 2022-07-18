@@ -11,12 +11,12 @@ import android.widget.Toast;
 
 import androidx.cardview.widget.CardView;
 
+import com.hiddenpirates.callrecorder.R;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-
-import callrecorder.R;
 
 public class ViewDialog {
 

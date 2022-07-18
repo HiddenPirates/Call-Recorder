@@ -20,6 +20,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.hiddenpirates.callrecorder.BuildConfig;
+import com.hiddenpirates.callrecorder.R;
+
 import org.apache.commons.io.comparator.LastModifiedFileComparator;
 import org.apache.commons.io.comparator.NameFileComparator;
 import org.jsoup.Jsoup;
@@ -31,9 +34,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
-
-import callrecorder.BuildConfig;
-import callrecorder.R;
 
 public class CustomFunctions {
 
@@ -123,7 +123,7 @@ public class CustomFunctions {
 
         new Thread(() -> {
             try {
-                String document_title = Jsoup.connect("https://github.com/HiddenPirates/Call-Recorder/releases/tag/" + vTag)
+                String document_title = Jsoup.connect(context.getString(R.string.github_release_tag_page_link) + vTag)
                         .timeout(30000).get().title();
 
                 Log.d("MADARA", "checkForUpdate: " + document_title);
@@ -139,7 +139,7 @@ public class CustomFunctions {
                     builder.setCancelable(false);
                     builder.setIcon(context.getResources().getDrawable(R.drawable.nav_header_img));
                     builder.setPositiveButton("Update", (dialog, which) -> {
-                        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/HiddenPirates/Call-Recorder/releases/tag/" + vTag)));
+                        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(context.getString(R.string.github_release_tag_page_link) + vTag)));
                         dialog.dismiss();
                     });
 
@@ -175,7 +175,7 @@ public class CustomFunctions {
         new Thread(() -> {
 
             try {
-                Jsoup.connect("https://github.com/HiddenPirates/Call-Recorder/releases/tag/" + vTag).timeout(30000).get().title();
+                Jsoup.connect(context.getString(R.string.github_release_tag_page_link) + vTag).timeout(30000).get().title();
                 button.setVisibility(View.VISIBLE);
             }
             catch (IOException e) {

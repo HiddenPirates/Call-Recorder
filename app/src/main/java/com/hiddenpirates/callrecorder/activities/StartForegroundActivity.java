@@ -1,15 +1,14 @@
 package com.hiddenpirates.callrecorder.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.hiddenpirates.callrecorder.services.RecordingService;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
-import callrecorder.R;
+import com.hiddenpirates.callrecorder.R;
+import com.hiddenpirates.callrecorder.services.RecordingService;
 
 public class StartForegroundActivity extends AppCompatActivity {
 
