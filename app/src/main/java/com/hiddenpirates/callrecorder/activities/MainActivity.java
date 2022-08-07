@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.role.RoleManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,7 +25,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -66,10 +66,12 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean doubleBackPressed = false;
 
-    private LinearLayout emptyFileIconContainer, fileLoadingInfoContainer;
+    @SuppressLint("StaticFieldLeak")
+    public static LinearLayout emptyFileIconContainer, fileLoadingInfoContainer;
+    public static RecyclerView allFilesRecyclerView;
+
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    private RecyclerView allFilesRecyclerView;
     private RVAdapterFileList rvAdapterFileList;
     private FloatingActionButton scrollBackToTopBtn, scrollToBottomBtn;
     private TextView totalFileLoadedTv;
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final JSONArray allFilesInformationJsonArray = new JSONArray();
 
+    public static MenuItem searchBtn, settingsBtn;
 
     @SuppressLint({"UseCompatLoadingForDrawables", "SetTextI18n"})
     @Override
@@ -123,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
         drawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-
+                CustomFunctions.hideKeyboard(MainActivity.this, drawerView);
             }
 
             @Override
@@ -205,33 +208,33 @@ public class MainActivity extends AppCompatActivity {
 
 //        ------------------------------------------------------------------------------------------
 //
-        if (!CustomFunctions.isSystemApp(this)){
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-            builder.setTitle(getString(R.string.not_system_app_message_title));
-            builder.setMessage(getString(R.string.not_system_app_message_body));
-            builder.setIcon(R.drawable.ic_error);
-            builder.setCancelable(false);
-            builder.setPositiveButton("Ok", (dialog, which) -> {
-                dialog.dismiss();
-                finishAndRemoveTask();
-            });
-            builder.setNegativeButton("Read Post",  (dialog, which) -> {
-                try {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tutorial_post_link))));
-                    new Handler(Looper.getMainLooper()).postDelayed(this::finishAndRemoveTask, 2000);
-                }
-                catch (Exception e){
-                    Toast.makeText(this, "No app found to open this link", Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                    onBackPressed();
-                }
-            });
-            builder.create();
-            builder.show();
-        }
-        else{
+//        if (!CustomFunctions.isSystemApp(this)){
+//
+//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//
+//            builder.setTitle(getString(R.string.not_system_app_message_title));
+//            builder.setMessage(getString(R.string.not_system_app_message_body));
+//            builder.setIcon(R.drawable.ic_error);
+//            builder.setCancelable(false);
+//            builder.setPositiveButton("Ok", (dialog, which) -> {
+//                dialog.dismiss();
+//                finishAndRemoveTask();
+//            });
+//            builder.setNegativeButton("Read Post",  (dialog, which) -> {
+//                try {
+//                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tutorial_post_link))));
+//                    new Handler(Looper.getMainLooper()).postDelayed(this::finishAndRemoveTask, 2000);
+//                }
+//                catch (Exception e){
+//                    Toast.makeText(this, "No app found to open this link", Toast.LENGTH_SHORT).show();
+//                    dialog.dismiss();
+//                    onBackPressed();
+//                }
+//            });
+//            builder.create();
+//            builder.show();
+//        }
+//        else{
             requestCallScreenPermission();
 
             if (!isPermissionGranted()){
@@ -291,6 +294,21 @@ public class MainActivity extends AppCompatActivity {
 
                             if (recordFile.isFile() && FilenameUtils.getExtension(recordFile.getAbsolutePath()).equalsIgnoreCase("m4a") && recordFile.length() > 0){
 
+                                String durationStr = "Duration: Unknown";
+
+                                try {
+                                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+                                    retriever.setDataSource(recordFile.getAbsolutePath());
+                                    long duration = Long.parseLong(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+
+                                    int durationInSeconds = (int) (duration/1000f);
+                                    durationStr = "Duration: " + CustomFunctions.timeFormatterFromSeconds(durationInSeconds);
+                                }
+                                catch (Exception e){
+                                    e.printStackTrace();
+                                }
+
+
                                 JSONObject fileInfo = new JSONObject();
 
                                 try {
@@ -298,6 +316,7 @@ public class MainActivity extends AppCompatActivity {
                                     fileInfo.put("size", CustomFunctions.fileSizeFormatter(recordFile.length()));
                                     fileInfo.put("modified_date", CustomFunctions.timeFormatter(recordFile.lastModified()));
                                     fileInfo.put("absolute_path", recordFile.getAbsolutePath());
+                                    fileInfo.put("duration", durationStr);
 
                                     allFilesInformationJsonArray.put(fileInfo);
                                 }
@@ -374,7 +393,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-        }
+//        }
 //        ------------------------------------------------------------------------------------------
     }
 
@@ -382,9 +401,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+
         getMenuInflater().inflate(R.menu.menu_dropdown_right_corner, menu);
 
-        MenuItem searchBtn = menu.findItem(R.id.menu_search_action);
+        searchBtn = menu.findItem(R.id.menu_search_action);
+        settingsBtn = menu.findItem(R.id.menu_settings_action);
 
         if (allFilesInformationJsonArray.length() <= 0){
             searchBtn.setVisible(false);
@@ -438,6 +459,7 @@ public class MainActivity extends AppCompatActivity {
         else{
             if (doubleBackPressed) {
                 super.onBackPressed();
+                finish();
             }
             else {
                 this.doubleBackPressed = true;
@@ -446,6 +468,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 //__________________________________________________________________________________________________
 
     @Override

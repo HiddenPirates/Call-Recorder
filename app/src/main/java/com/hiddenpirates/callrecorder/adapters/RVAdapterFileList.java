@@ -33,6 +33,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.MyCustomViewHolder> implements Filterable {
 
@@ -40,6 +42,9 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
     Context context;
     JSONArray fileInfos;
     JSONArray fileInfos2;
+    boolean isSelectModeOn, isSelectAllOptionClicked;
+    ArrayList<Integer> selectedItemsPositionsList = new ArrayList<>();
+
 
     public RVAdapterFileList(Context context, JSONArray fileInfos){
         this.context = context;
@@ -61,39 +66,57 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
     public void onBindViewHolder(@NonNull MyCustomViewHolder holder, int position) {
         try {
             holder.fileNameTV.setText(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("name"));
-
             String fileSizeAndDate = fileInfos.getJSONObject(holder.getAdapterPosition()).get("modified_date") + "\t\t (" + fileInfos.getJSONObject(holder.getAdapterPosition()).get("size") + ")";
-
             holder.fileInfoTV.setText(fileSizeAndDate);
+            holder.fileDurationTV.setText(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("duration"));
         }
         catch (JSONException e) {
             e.printStackTrace();
         }
 
+
+//        holder.itemView.setBackgroundColor(context.getColor(R.color.white));
+
+        if (isSelectAllOptionClicked){
+            holder.itemView.findViewById(R.id.selectionIcon).setVisibility(View.VISIBLE);
+            selectedItemsPositionsList.add(holder.getAdapterPosition());
+        }
+        else{
+            holder.itemView.findViewById(R.id.selectionIcon).setVisibility(View.GONE);
+        }
+
 //        ------------------------------------------------------------------------------------------
         holder.itemView.setOnClickListener(view -> {
-            try {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", new File(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("absolute_path")));
-                intent.setDataAndType(uri, "audio/mpeg");
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                context.startActivity(intent);
+
+            if (isSelectModeOn){
+
+                if (selectedItemsPositionsList.isEmpty()){
+                    isSelectModeOn = false;
+                    MainActivity.searchBtn.setVisible(true);
+                    MainActivity.settingsBtn.setVisible(true);
+                }
+                else{
+                    if (selectedItemsPositionsList.contains(holder.getAdapterPosition())){
+
+                        try{
+                            selectedItemsPositionsList.remove((Integer) holder.getAdapterPosition()); // eta object er maddhomey remove korchhi
+//                            selectedItemsPositionsList.remove(selectedItemsPositionsList.indexOf(holder.getAdapterPosition())); //ota na hole eta index er maddhome remove korchhi
+
+                            holder.itemView.findViewById(R.id.selectionIcon).setVisibility(View.GONE);
+                            isSelectAllOptionClicked = false;
+
+                        }
+                        catch (Exception e){
+                            Log.d(TAG, "onBindViewHolder s4: " + e.getMessage());
+                        }
+                    }
+                    else{
+                        holder.itemView.findViewById(R.id.selectionIcon).setVisibility(View.VISIBLE);
+                        selectedItemsPositionsList.add(holder.getAdapterPosition());
+                    }
+                }
             }
-            catch (Exception e){
-                e.printStackTrace();
-                Log.d(TAG, e.getMessage());
-            }
-        });
-//        ------------------------------------------------------------------------------------------
-        holder.itemView.setOnLongClickListener(view -> {
-
-            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
-            bottomSheetDialog.setCancelable(true);
-            bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_control_btns);
-            bottomSheetDialog.getBehavior().setState(BottomSheetBehavior.STATE_EXPANDED);
-
-            bottomSheetDialog.findViewById(R.id.playBtnCV).setOnClickListener(view1 -> {
-
+            else {
                 try {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", new File(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("absolute_path")));
@@ -101,147 +124,255 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
                     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     context.startActivity(intent);
                 }
-                catch (Exception e){
+                catch (Exception e) {
                     e.printStackTrace();
                     Log.d(TAG, e.getMessage());
                 }
-            });
+            }
+        });
+//        ------------------------------------------------------------------------------------------
+        holder.itemView.setOnLongClickListener(view -> {
 
-            bottomSheetDialog.findViewById(R.id.deleteBtnCV).setOnClickListener(view1 -> {
+            BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context);
+            bottomSheetDialog.setCancelable(true);
+            bottomSheetDialog.getBehavior().setState(BottomSheetBehavior.STATE_EXPANDED);
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setCancelable(true);
-                builder.setTitle("Delete");
-                builder.setMessage("Do you really want to delete?");
-                builder.setIcon(R.drawable.ic_delete_24);
-                builder.setPositiveButton("Delete", (dialogInterface, i) -> {
+            if (isSelectModeOn){
+                bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_selected_ctrl_btns);
+
+                bottomSheetDialog.findViewById(R.id.selectAllBtnCV).setOnClickListener(view1 -> {
+                    isSelectAllOptionClicked = true;
+                    selectedItemsPositionsList.clear();
+                    notifyDataSetChanged();
+                    bottomSheetDialog.dismiss();
+                });
+
+                bottomSheetDialog.findViewById(R.id.deselectAllBtnCV).setOnClickListener(view1 -> {
+                    isSelectAllOptionClicked = false;
+                    selectedItemsPositionsList.clear();
+                    isSelectModeOn = false;
+                    notifyDataSetChanged();
+                    bottomSheetDialog.dismiss();
+                    MainActivity.searchBtn.setVisible(true);
+                    MainActivity.settingsBtn.setVisible(true);
+                });
+
+                bottomSheetDialog.findViewById(R.id.deleteAllBtnCV).setOnClickListener(view1 -> {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setCancelable(true);
+                    builder.setTitle("Delete files");
+                    builder.setMessage("Selected files will be deleted.");
+                    builder.setIcon(R.drawable.ic_delete_24);
+                    builder.setPositiveButton("Delete", (dialogInterface, i) -> {
+
+                        selectedItemsPositionsList.sort(Collections.reverseOrder());
+
+                        int k = 0;
+
+                        while (k < selectedItemsPositionsList.size()) {
+
+                            int filePosition = selectedItemsPositionsList.get(k);
+
+                            try {
+
+                                File temp_file = new File(fileInfos.getJSONObject(filePosition).get("absolute_path").toString());
+
+//                                if (temp_file.delete()) {
+
+                                    fileInfos.remove(filePosition);
+                                    k++;
+//                                }
+                            }
+                            catch (Exception e) {
+                                e.printStackTrace();
+                                Log.d(TAG, "onBindViewHolder error: " + e.getLocalizedMessage());
+                                k++;
+                            }
+                        }
+
+                        Toast.makeText(context, "Selected recordings deleted successfully.", Toast.LENGTH_SHORT).show();
+
+                        isSelectModeOn = false;
+                        selectedItemsPositionsList.clear();
+                        notifyDataSetChanged();
+                        bottomSheetDialog.dismiss();
+
+                        if (fileInfos.length() <= 0){
+                            MainActivity.allFilesRecyclerView.setVisibility(View.GONE);
+                            MainActivity.emptyFileIconContainer.setVisibility(View.VISIBLE);
+                        }
+                    });
+
+                    builder.setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss());
+                    builder.show();
+                });
+            }
+            else {
+
+                bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_control_btns);
+
+                bottomSheetDialog.findViewById(R.id.selectBtnCV).setOnClickListener(view1 -> {
+                    isSelectModeOn = true;
+                    holder.itemView.findViewById(R.id.selectionIcon).setVisibility(View.VISIBLE);
+                    selectedItemsPositionsList.add(holder.getAdapterPosition());
+                    bottomSheetDialog.dismiss();
+                    MainActivity.searchBtn.setVisible(false);
+                    MainActivity.settingsBtn.setVisible(false);
+                });
+
+                bottomSheetDialog.findViewById(R.id.playBtnCV).setOnClickListener(view1 -> {
+
                     try {
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", new File(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("absolute_path")));
+                        intent.setDataAndType(uri, "audio/mpeg");
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        context.startActivity(intent);
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                        Log.d(TAG, e.getMessage());
+                    }
+                });
 
-                        File temp_file = new File(fileInfos.getJSONObject(holder.getAdapterPosition()).get("absolute_path").toString());
+                bottomSheetDialog.findViewById(R.id.deleteBtnCV).setOnClickListener(view1 -> {
 
-                        if (temp_file.delete()){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setCancelable(true);
+                    builder.setTitle("Delete");
+                    builder.setMessage("Do you really want to delete?");
+                    builder.setIcon(R.drawable.ic_delete_24);
+                    builder.setPositiveButton("Delete", (dialogInterface, i) -> {
+                        try {
 
-                            Toast.makeText(context, "Recorded file deleted successfully.", Toast.LENGTH_SHORT).show();
+                            File temp_file = new File(fileInfos.getJSONObject(holder.getAdapterPosition()).get("absolute_path").toString());
 
-                            fileInfos.remove(holder.getAdapterPosition());
-                            notifyDataSetChanged();
-                            notifyItemRemoved(holder.getAdapterPosition());
+                            if (temp_file.delete()){
 
-                            bottomSheetDialog.dismiss();
+                                Toast.makeText(context, "Recorded file deleted successfully.", Toast.LENGTH_SHORT).show();
+
+                                fileInfos.remove(holder.getAdapterPosition());
+                                notifyDataSetChanged();
+                                notifyItemRemoved(holder.getAdapterPosition());
+
+                                bottomSheetDialog.dismiss();
+                            }
+                            else{
+                                Toast.makeText(context, "Failed to delete file.", Toast.LENGTH_SHORT).show();
+                            }
                         }
-                        else{
-                            Toast.makeText(context, "Failed to delete file.", Toast.LENGTH_SHORT).show();
+                        catch (JSONException e) {
+                            e.printStackTrace();
                         }
+                    });
+                    builder.setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss());
+                    builder.show();
+                });
+
+
+                bottomSheetDialog.findViewById(R.id.renameBtnCV).setOnClickListener(view1 -> {
+
+                    try {
+                        String oldName = fileInfos.getJSONObject(holder.getAdapterPosition()).get("name").toString();
+                        String filePath = fileInfos.getJSONObject(holder.getAdapterPosition()).get("absolute_path").toString();
+
+                        EditText inputField = new EditText(context);
+                        inputField.setHint("Enter new file name...");
+                        inputField.setText(oldName.substring(0, oldName.length() - 4));
+                        inputField.setSingleLine(true);
+                        inputField.setInputType(InputType.TYPE_CLASS_TEXT);
+                        inputField.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.hp_theme_color_ld)));
+                        inputField.setPadding(
+                                context.getResources().getDimensionPixelSize(R.dimen.input_box_padding_lr),
+                                context.getResources().getDimensionPixelSize(R.dimen.input_box_padding_tb),
+                                context.getResources().getDimensionPixelSize(R.dimen.input_box_padding_lr),
+                                context.getResources().getDimensionPixelSize(R.dimen.input_box_padding_tb)
+                        );
+
+                        FrameLayout container = new FrameLayout(context);
+
+                        FrameLayout.LayoutParams params = new  FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                        params.leftMargin = context.getResources().getDimensionPixelSize(R.dimen.dialog_margin_left);
+                        params.rightMargin = context.getResources().getDimensionPixelSize(R.dimen.dialog_margin_right);
+                        params.topMargin = context.getResources().getDimensionPixelSize(R.dimen.dialog_margin_top);
+
+                        inputField.setLayoutParams(params);
+
+                        container.addView(inputField);
+
+                        AlertDialog dialog = new AlertDialog.Builder(context)
+                                .setTitle("Rename to:")
+                                .setView(container)
+                                .setCancelable(false)
+                                .setIcon(R.drawable.ic_mode_edit_24)
+                                .setPositiveButton("Rename", (dialogInterface, i) -> {
+
+                                    String newName = inputField.getText().toString();
+
+                                    if (!newName.equalsIgnoreCase("")){
+
+                                        newName += ".m4a";
+
+                                        File oldNameFile = new File(filePath);
+                                        File newNameFile = new File(oldNameFile.getParent().concat("/" + newName));
+
+                                        if (oldNameFile.renameTo(newNameFile)){
+
+                                            Toast.makeText(context, "File renamed.", Toast.LENGTH_SHORT).show();
+
+                                            JSONObject temp_file_jo = new JSONObject();
+
+                                            try {
+                                                temp_file_jo.put("name", newName);
+                                                temp_file_jo.put("size", fileInfos.getJSONObject(holder.getAdapterPosition()).get("size").toString());
+                                                temp_file_jo.put("modified_date", fileInfos.getJSONObject(holder.getAdapterPosition()).get("modified_date").toString());
+                                                temp_file_jo.put("absolute_path", new File(fileInfos.getJSONObject(holder.getAdapterPosition()).get("absolute_path").toString()).getParent().concat("/" + newName));
+
+//                                            fileInfos.remove(holder.getAdapterPosition());
+                                                fileInfos.put(holder.getAdapterPosition(), temp_file_jo);
+
+                                                notifyDataSetChanged();
+                                            }
+                                            catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        else{
+                                            Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        dialogInterface.dismiss();
+                                    }
+                                    else{
+                                        Toast.makeText(context, "Please provide a valid name.", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                })
+                                .setNegativeButton("Cancel", null)
+                                .create();
+
+                        dialog.show();
+                        bottomSheetDialog.dismiss();
                     }
                     catch (JSONException e) {
                         e.printStackTrace();
                     }
                 });
-                builder.setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss());
-                builder.show();
-            });
 
 
-            bottomSheetDialog.findViewById(R.id.renameBtnCV).setOnClickListener(view1 -> {
+                bottomSheetDialog.findViewById(R.id.infoBtnCV).setOnClickListener(view1 -> {
+                    try {
+                        new ViewDialog().showFileInfoDialog(context, fileInfos.getJSONObject(holder.getAdapterPosition()));
+                        bottomSheetDialog.dismiss();
+                    }
+                    catch (JSONException e) {
+                        e.printStackTrace();
+                        Toast.makeText(context, "Something went wrong. Please report this issue.", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
-                try {
-                    String oldName = fileInfos.getJSONObject(holder.getAdapterPosition()).get("name").toString();
-                    String filePath = fileInfos.getJSONObject(holder.getAdapterPosition()).get("absolute_path").toString();
-
-                    EditText inputField = new EditText(context);
-                    inputField.setHint("Enter new file name...");
-                    inputField.setText(oldName.substring(0, oldName.length() - 4));
-                    inputField.setSingleLine(true);
-                    inputField.setInputType(InputType.TYPE_CLASS_TEXT);
-                    inputField.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.hp_theme_color_ld)));
-                    inputField.setPadding(
-                            context.getResources().getDimensionPixelSize(R.dimen.input_box_padding_lr),
-                            context.getResources().getDimensionPixelSize(R.dimen.input_box_padding_tb),
-                            context.getResources().getDimensionPixelSize(R.dimen.input_box_padding_lr),
-                            context.getResources().getDimensionPixelSize(R.dimen.input_box_padding_tb)
-                    );
-
-                    FrameLayout container = new FrameLayout(context);
-
-                    FrameLayout.LayoutParams params = new  FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    params.leftMargin = context.getResources().getDimensionPixelSize(R.dimen.dialog_margin_left);
-                    params.rightMargin = context.getResources().getDimensionPixelSize(R.dimen.dialog_margin_right);
-                    params.topMargin = context.getResources().getDimensionPixelSize(R.dimen.dialog_margin_top);
-
-                    inputField.setLayoutParams(params);
-
-                    container.addView(inputField);
-
-                    AlertDialog dialog = new AlertDialog.Builder(context)
-                            .setTitle("Rename to:")
-                            .setView(container)
-                            .setCancelable(false)
-                            .setIcon(R.drawable.ic_mode_edit_24)
-                            .setPositiveButton("Rename", (dialogInterface, i) -> {
-
-                                String newName = inputField.getText().toString();
-
-                                if (!newName.equalsIgnoreCase("")){
-
-                                    newName += ".m4a";
-
-                                    File oldNameFile = new File(filePath);
-                                    File newNameFile = new File(oldNameFile.getParent().concat("/" + newName));
-
-                                    if (oldNameFile.renameTo(newNameFile)){
-
-                                        Toast.makeText(context, "File renamed.", Toast.LENGTH_SHORT).show();
-
-                                        JSONObject temp_file_jo = new JSONObject();
-
-                                        try {
-                                            temp_file_jo.put("name", newName);
-                                            temp_file_jo.put("size", fileInfos.getJSONObject(holder.getAdapterPosition()).get("size").toString());
-                                            temp_file_jo.put("modified_date", fileInfos.getJSONObject(holder.getAdapterPosition()).get("modified_date").toString());
-                                            temp_file_jo.put("absolute_path", new File(fileInfos.getJSONObject(holder.getAdapterPosition()).get("absolute_path").toString()).getParent().concat("/" + newName));
-
-//                                            fileInfos.remove(holder.getAdapterPosition());
-                                            fileInfos.put(holder.getAdapterPosition(), temp_file_jo);
-
-                                            notifyDataSetChanged();
-                                        }
-                                        catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                    else{
-                                        Toast.makeText(context, "Failed", Toast.LENGTH_SHORT).show();
-                                    }
-
-                                    dialogInterface.dismiss();
-                                }
-                                else{
-                                    Toast.makeText(context, "Please provide a valid name.", Toast.LENGTH_SHORT).show();
-                                }
-
-                            })
-                            .setNegativeButton("Cancel", null)
-                            .create();
-
-                    dialog.show();
-                    bottomSheetDialog.dismiss();
-                }
-                catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            });
-
-
-            bottomSheetDialog.findViewById(R.id.infoBtnCV).setOnClickListener(view1 -> {
-                try {
-                    new ViewDialog().showFileInfoDialog(context, fileInfos.getJSONObject(holder.getAdapterPosition()));
-                    bottomSheetDialog.dismiss();
-                }
-                catch (JSONException e) {
-                    e.printStackTrace();
-                    Toast.makeText(context, "Something went wrong. Please report this issue.", Toast.LENGTH_SHORT).show();
-                }
-            });
+            }
 
             bottomSheetDialog.show();
 
@@ -269,12 +400,16 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
                 filteredFileInfos = fileInfos2;
             }
             else{
-                String search_term = charSequence.toString().trim();
+                String search_term = charSequence.toString().trim().toLowerCase();
 
                 for (int i = 0; i < fileInfos2.length(); i++){
 
                     try {
-                        if (fileInfos2.getJSONObject(i).getString("name").toLowerCase().contains(search_term) || fileInfos2.getJSONObject(i).getString("modified_date").toLowerCase().contains(search_term)){
+                        if (
+                                fileInfos2.getJSONObject(i).getString("name").toLowerCase().contains(search_term)
+                                ||
+                                fileInfos2.getJSONObject(i).getString("modified_date").toLowerCase().contains(search_term)
+                        ){
                             filteredFileInfos.put(fileInfos2.getJSONObject(i));
                         }
                     }
@@ -301,13 +436,14 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
 
     public static class MyCustomViewHolder extends RecyclerView.ViewHolder{
 
-        TextView fileNameTV, fileInfoTV;
+        TextView fileNameTV, fileInfoTV, fileDurationTV;
 
         public MyCustomViewHolder(View itemView) {
             super(itemView);
 
             fileNameTV = itemView.findViewById(R.id.fileNameTV);
             fileInfoTV = itemView.findViewById(R.id.fileInfoTV);
+            fileDurationTV = itemView.findViewById(R.id.fileDurationTV);
         }
     }
 }

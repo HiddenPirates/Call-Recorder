@@ -13,7 +13,7 @@
 
             <item
                 android:id="@+id/donate_me_action"
-                android:title="Donate Us"
+                android:title="Donate"
                 android:icon="@drawable/ic_donation"/>
         </menu>
     </item>

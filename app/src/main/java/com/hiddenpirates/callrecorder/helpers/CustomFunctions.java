@@ -113,6 +113,48 @@ public class CustomFunctions {
     }
 //__________________________________________________________________________________________________
 
+    public static String timeFormatterFromSeconds(int seconds){
+
+        int hoursInt = 0, minutesInt = 0, secondsInt;
+        String hoursStr = "00", minutesStr = "00", secondsStr;
+
+        if (seconds < 60){
+            secondsInt = seconds;
+            secondsStr = String.valueOf(seconds);
+        }
+        else{
+            secondsInt = seconds%60;
+            secondsStr = secondsInt + "";
+            minutesInt = (seconds - secondsInt)/60;
+
+            if (minutesInt > 60){
+
+                hoursInt = (minutesInt - (minutesInt%60))/60;
+                minutesInt = minutesInt%60;
+
+                hoursStr =  String.valueOf(hoursInt);
+                minutesStr =  String.valueOf(minutesInt);
+            }
+        }
+
+        if (secondsInt < 10){
+            secondsStr = "0" + secondsStr;
+        }
+        if (minutesInt < 10){
+            if (minutesInt > 0){
+                minutesStr = "0" + minutesInt;
+            }
+        }
+        if (hoursInt < 10){
+            if (hoursInt > 0){
+                hoursStr = "0" + hoursInt;
+            }
+        }
+
+        return hoursStr + ":" + minutesStr + ":" + secondsStr;
+    }
+//__________________________________________________________________________________________________
+
     @SuppressLint("UseCompatLoadingForDrawables")
     public static void checkForUpdate(Context context, MenuItem menuItem) {
 

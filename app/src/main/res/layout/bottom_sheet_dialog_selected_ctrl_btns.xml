@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/selectBtnCV"
+        android:id="@+id/selectAllBtnCV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:ignore="HardcodedText"
@@ -15,7 +15,8 @@
         card_view:cardUseCompatPadding="false"
         android:clickable="true"
         android:foreground="?android:attr/selectableItemBackground"
-        android:focusable="true">
+        android:focusable="true"
+        android:visibility="visible">
 
         <LinearLayout
             android:padding="10dp"
@@ -27,14 +28,14 @@
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/ic_done_24"
+                android:src="@drawable/ic_select_all_24"
                 android:layout_marginEnd="10dp"
                 android:contentDescription="Play" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Select"
+                android:text="Select all"
                 android:textColor="?attr/text_color"
                 android:layout_gravity="center_vertical"
                 android:textSize="18sp"
@@ -44,8 +45,9 @@
 
     </androidx.cardview.widget.CardView>
 
+
     <androidx.cardview.widget.CardView
-        android:id="@+id/playBtnCV"
+        android:id="@+id/deselectAllBtnCV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:ignore="HardcodedText"
@@ -55,7 +57,8 @@
         card_view:cardUseCompatPadding="false"
         android:clickable="true"
         android:foreground="?android:attr/selectableItemBackground"
-        android:focusable="true">
+        android:focusable="true"
+        android:visibility="visible">
 
         <LinearLayout
             android:padding="10dp"
@@ -67,14 +70,14 @@
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/ic_play_circle_24"
+                android:src="@drawable/ic_deselect_24"
                 android:layout_marginEnd="10dp"
                 android:contentDescription="Play" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Play"
+                android:text="Deselect all"
                 android:textColor="?attr/text_color"
                 android:layout_gravity="center_vertical"
                 android:textSize="18sp"
@@ -85,47 +88,7 @@
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/renameBtnCV"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:ignore="HardcodedText"
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        card_view:cardCornerRadius="5dp"
-        card_view:cardElevation="0dp"
-        card_view:cardUseCompatPadding="false"
-        android:clickable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:focusable="true">
-
-        <LinearLayout
-            android:padding="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            tools:ignore="UseCompoundDrawables">
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/ic_mode_edit_24"
-                android:layout_marginEnd="10dp"
-                android:contentDescription="Play" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Rename"
-                android:textColor="?attr/text_color"
-                android:layout_gravity="center_vertical"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
-
-        </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/deleteBtnCV"
+        android:id="@+id/deleteAllBtnCV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:ignore="HardcodedText"
@@ -155,46 +118,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Delete"
-                android:textColor="?attr/text_color"
-                android:layout_gravity="center_vertical"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
-
-        </LinearLayout>
-
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/infoBtnCV"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:ignore="HardcodedText"
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        card_view:cardCornerRadius="5dp"
-        card_view:cardElevation="0dp"
-        card_view:cardUseCompatPadding="false"
-        android:clickable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:focusable="true">
-
-        <LinearLayout
-            android:padding="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            tools:ignore="UseCompoundDrawables">
-
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/ic_info"
-                android:layout_marginEnd="10dp"
-                android:contentDescription="Play" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Property"
                 android:textColor="?attr/text_color"
                 android:layout_gravity="center_vertical"
                 android:textSize="18sp"

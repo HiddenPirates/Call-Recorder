@@ -14,5 +14,6 @@
         <!-- Customize your theme here. -->
         <item name="main_theme_color">@color/hp_theme_color_ld</item>
         <item name="text_color">@color/black</item>
+        <item name="recording_item_bg">@color/white</item>
     </style>
 </resources>
