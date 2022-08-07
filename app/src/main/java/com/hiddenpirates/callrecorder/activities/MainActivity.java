@@ -25,6 +25,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -208,33 +209,33 @@ public class MainActivity extends AppCompatActivity {
 
 //        ------------------------------------------------------------------------------------------
 //
-//        if (!CustomFunctions.isSystemApp(this)){
-//
-//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//
-//            builder.setTitle(getString(R.string.not_system_app_message_title));
-//            builder.setMessage(getString(R.string.not_system_app_message_body));
-//            builder.setIcon(R.drawable.ic_error);
-//            builder.setCancelable(false);
-//            builder.setPositiveButton("Ok", (dialog, which) -> {
-//                dialog.dismiss();
-//                finishAndRemoveTask();
-//            });
-//            builder.setNegativeButton("Read Post",  (dialog, which) -> {
-//                try {
-//                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tutorial_post_link))));
-//                    new Handler(Looper.getMainLooper()).postDelayed(this::finishAndRemoveTask, 2000);
-//                }
-//                catch (Exception e){
-//                    Toast.makeText(this, "No app found to open this link", Toast.LENGTH_SHORT).show();
-//                    dialog.dismiss();
-//                    onBackPressed();
-//                }
-//            });
-//            builder.create();
-//            builder.show();
-//        }
-//        else{
+        if (!CustomFunctions.isSystemApp(this)){
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setTitle(getString(R.string.not_system_app_message_title));
+            builder.setMessage(getString(R.string.not_system_app_message_body));
+            builder.setIcon(R.drawable.ic_error);
+            builder.setCancelable(false);
+            builder.setPositiveButton("Ok", (dialog, which) -> {
+                dialog.dismiss();
+                finishAndRemoveTask();
+            });
+            builder.setNegativeButton("Read Post",  (dialog, which) -> {
+                try {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tutorial_post_link))));
+                    new Handler(Looper.getMainLooper()).postDelayed(this::finishAndRemoveTask, 2000);
+                }
+                catch (Exception e){
+                    Toast.makeText(this, "No app found to open this link", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                    onBackPressed();
+                }
+            });
+            builder.create();
+            builder.show();
+        }
+        else{
             requestCallScreenPermission();
 
             if (!isPermissionGranted()){
@@ -393,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-//        }
+        }
 //        ------------------------------------------------------------------------------------------
     }
 

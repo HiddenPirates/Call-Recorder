@@ -178,11 +178,10 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
 
                                 File temp_file = new File(fileInfos.getJSONObject(filePosition).get("absolute_path").toString());
 
-//                                if (temp_file.delete()) {
-
+                                if (temp_file.delete()) {
                                     fileInfos.remove(filePosition);
                                     k++;
-//                                }
+                                }
                             }
                             catch (Exception e) {
                                 e.printStackTrace();
@@ -229,6 +228,21 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
                         intent.setDataAndType(uri, "audio/mpeg");
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         context.startActivity(intent);
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                        Log.d(TAG, e.getMessage());
+                    }
+                });
+
+                bottomSheetDialog.findViewById(R.id.shareRecordingBtnCV).setOnClickListener(view1 -> {
+
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_SEND);
+                        Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", new File(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("absolute_path")));
+                        intent.setDataAndType(uri, "audio/mpeg");
+                        intent.putExtra(Intent.EXTRA_STREAM, uri);
+                        context.startActivity(Intent.createChooser(intent, "Share via"));
                     }
                     catch (Exception e){
                         e.printStackTrace();
