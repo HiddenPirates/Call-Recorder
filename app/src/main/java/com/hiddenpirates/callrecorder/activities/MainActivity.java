@@ -5,13 +5,13 @@ import android.annotation.SuppressLint;
 import android.app.role.RoleManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.StrictMode;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("StaticFieldLeak")
     public static LinearLayout emptyFileIconContainer, fileLoadingInfoContainer;
     public static RecyclerView allFilesRecyclerView;
+    public static MenuItem searchBtn, settingsBtn, menu_selected_items_count;
 
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -80,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
 
     private final JSONArray allFilesInformationJsonArray = new JSONArray();
 
-    public static MenuItem searchBtn, settingsBtn;
 
     @SuppressLint({"UseCompatLoadingForDrawables", "SetTextI18n"})
     @Override
@@ -104,9 +104,16 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle(getResources().getString(R.string.app_name));
 
+        /* Strict mode add korar karon holo multiple files share korar somoi app crash kore jachhe*/
+        StrictMode.VmPolicy.Builder smBuilder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(smBuilder.build());
 //--------------------------------------------------------------------------------------------------
 
         View headView = navigationView.getHeaderView(0);
+
+        if (CustomFunctions.isDarkModeOn(this)){
+            headView.setBackground(getDrawable(R.drawable.header_bg2));
+        }
 
         ((TextView) headView.findViewById(R.id.header_layout_version_tv)).setText("Version: " + BuildConfig.VERSION_NAME);
 
@@ -295,20 +302,6 @@ public class MainActivity extends AppCompatActivity {
 
                             if (recordFile.isFile() && FilenameUtils.getExtension(recordFile.getAbsolutePath()).equalsIgnoreCase("m4a") && recordFile.length() > 0){
 
-                                String durationStr = "Duration: Unknown";
-
-                                try {
-                                    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-                                    retriever.setDataSource(recordFile.getAbsolutePath());
-                                    long duration = Long.parseLong(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-
-                                    int durationInSeconds = (int) (duration/1000f);
-                                    durationStr = "Duration: " + CustomFunctions.timeFormatterFromSeconds(durationInSeconds);
-                                }
-                                catch (Exception e){
-                                    e.printStackTrace();
-                                }
-
 
                                 JSONObject fileInfo = new JSONObject();
 
@@ -317,7 +310,6 @@ public class MainActivity extends AppCompatActivity {
                                     fileInfo.put("size", CustomFunctions.fileSizeFormatter(recordFile.length()));
                                     fileInfo.put("modified_date", CustomFunctions.timeFormatter(recordFile.lastModified()));
                                     fileInfo.put("absolute_path", recordFile.getAbsolutePath());
-                                    fileInfo.put("duration", durationStr);
 
                                     allFilesInformationJsonArray.put(fileInfo);
                                 }
@@ -330,6 +322,8 @@ public class MainActivity extends AppCompatActivity {
                         handler.post(() -> {
 
                             if (allFilesInformationJsonArray.length() > 0){
+
+                                searchBtn.setVisible(true);
 
                                 fileLoadingInfoContainer.setVisibility(View.GONE);
 
@@ -401,16 +395,15 @@ public class MainActivity extends AppCompatActivity {
 //__________________________________________________________________________________________________
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
 
         getMenuInflater().inflate(R.menu.menu_dropdown_right_corner, menu);
 
         searchBtn = menu.findItem(R.id.menu_search_action);
         settingsBtn = menu.findItem(R.id.menu_settings_action);
+        menu_selected_items_count = menu.findItem(R.id.menu_selected_items_count);
 
-        if (allFilesInformationJsonArray.length() <= 0){
-            searchBtn.setVisible(false);
-        }
+        searchBtn.setVisible(false);
 
         SearchView searchView = (SearchView) searchBtn.getActionView();
         searchView.setMaxWidth(Integer.MAX_VALUE);

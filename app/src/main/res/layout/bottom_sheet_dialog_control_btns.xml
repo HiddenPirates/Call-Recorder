@@ -5,13 +5,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:id="@+id/fileNameContainerLLinBottomDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="5dp"
+        android:background="?android:attr/selectableItemBackground">
+
+        <TextView
+            android:id="@+id/fileNameTVinBottomDialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textAlignment="center"
+            android:textColor="?attr/text_color"
+            android:textSize="18sp"
+            android:padding="10dp" />
+    </LinearLayout>
+
     <androidx.cardview.widget.CardView
         android:id="@+id/selectBtnCV"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:ignore="HardcodedText"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        card_view:cardCornerRadius="4dp"
+        card_view:cardCornerRadius="0dp"
         card_view:cardElevation="0dp"
         card_view:cardUseCompatPadding="false"
         android:clickable="true"
@@ -51,7 +71,7 @@
         android:layout_height="wrap_content"
         tools:ignore="HardcodedText"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        card_view:cardCornerRadius="4dp"
+        card_view:cardCornerRadius="0dp"
         card_view:cardElevation="0dp"
         card_view:cardUseCompatPadding="false"
         android:clickable="true"
@@ -92,7 +112,7 @@
         android:layout_height="wrap_content"
         tools:ignore="HardcodedText"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        card_view:cardCornerRadius="4dp"
+        card_view:cardCornerRadius="0dp"
         card_view:cardElevation="0dp"
         card_view:cardUseCompatPadding="false"
         android:clickable="true"
@@ -133,7 +153,7 @@
         android:layout_height="wrap_content"
         tools:ignore="HardcodedText"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        card_view:cardCornerRadius="5dp"
+        card_view:cardCornerRadius="0dp"
         card_view:cardElevation="0dp"
         card_view:cardUseCompatPadding="false"
         android:clickable="true"
@@ -173,7 +193,7 @@
         android:layout_height="wrap_content"
         tools:ignore="HardcodedText"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        card_view:cardCornerRadius="5dp"
+        card_view:cardCornerRadius="0dp"
         card_view:cardElevation="0dp"
         card_view:cardUseCompatPadding="false"
         android:clickable="true"
@@ -213,7 +233,7 @@
         android:layout_height="wrap_content"
         tools:ignore="HardcodedText"
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        card_view:cardCornerRadius="5dp"
+        card_view:cardCornerRadius="0dp"
         card_view:cardElevation="0dp"
         card_view:cardUseCompatPadding="false"
         android:clickable="true"

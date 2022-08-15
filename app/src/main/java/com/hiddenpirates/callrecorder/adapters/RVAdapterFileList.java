@@ -26,6 +26,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.hiddenpirates.callrecorder.R;
 import com.hiddenpirates.callrecorder.activities.MainActivity;
+import com.hiddenpirates.callrecorder.helpers.CustomFunctions;
 import com.hiddenpirates.callrecorder.helpers.ViewDialog;
 
 import org.json.JSONArray;
@@ -44,6 +45,7 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
     JSONArray fileInfos2;
     boolean isSelectModeOn, isSelectAllOptionClicked;
     ArrayList<Integer> selectedItemsPositionsList = new ArrayList<>();
+    ArrayList<Uri> selectedFilesUriList = new ArrayList<>();
 
 
     public RVAdapterFileList(Context context, JSONArray fileInfos){
@@ -68,7 +70,6 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
             holder.fileNameTV.setText(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("name"));
             String fileSizeAndDate = fileInfos.getJSONObject(holder.getAdapterPosition()).get("modified_date") + "\t\t (" + fileInfos.getJSONObject(holder.getAdapterPosition()).get("size") + ")";
             holder.fileInfoTV.setText(fileSizeAndDate);
-            holder.fileDurationTV.setText(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("duration"));
         }
         catch (JSONException e) {
             e.printStackTrace();
@@ -80,6 +81,13 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
         if (isSelectAllOptionClicked){
             holder.itemView.findViewById(R.id.selectionIcon).setVisibility(View.VISIBLE);
             selectedItemsPositionsList.add(holder.getAdapterPosition());
+            try {
+                selectedFilesUriList.add(Uri.fromFile(new File(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("absolute_path"))));
+            }
+            catch (JSONException e) {
+                e.printStackTrace();
+            }
+            MainActivity.menu_selected_items_count.setTitle(selectedItemsPositionsList.size() + "");
         }
         else{
             holder.itemView.findViewById(R.id.selectionIcon).setVisibility(View.GONE);
@@ -94,6 +102,7 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
                     isSelectModeOn = false;
                     MainActivity.searchBtn.setVisible(true);
                     MainActivity.settingsBtn.setVisible(true);
+                    MainActivity.menu_selected_items_count.setVisible(false);
                 }
                 else{
                     if (selectedItemsPositionsList.contains(holder.getAdapterPosition())){
@@ -101,9 +110,17 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
                         try{
                             selectedItemsPositionsList.remove((Integer) holder.getAdapterPosition()); // eta object er maddhomey remove korchhi
 //                            selectedItemsPositionsList.remove(selectedItemsPositionsList.indexOf(holder.getAdapterPosition())); //ota na hole eta index er maddhome remove korchhi
+                            try {
+                                selectedFilesUriList.remove(Uri.fromFile(new File(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("absolute_path"))));
+                            }
+                            catch (JSONException e) {
+                                e.printStackTrace();
+                                Toast.makeText(context, "" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                            }
 
                             holder.itemView.findViewById(R.id.selectionIcon).setVisibility(View.GONE);
                             isSelectAllOptionClicked = false;
+                            MainActivity.menu_selected_items_count.setTitle(selectedItemsPositionsList.size() + "");
 
                         }
                         catch (Exception e){
@@ -113,6 +130,12 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
                     else{
                         holder.itemView.findViewById(R.id.selectionIcon).setVisibility(View.VISIBLE);
                         selectedItemsPositionsList.add(holder.getAdapterPosition());
+                        MainActivity.menu_selected_items_count.setTitle(selectedItemsPositionsList.size() + "");
+                        try {
+                            selectedFilesUriList.add(Uri.fromFile(new File(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("absolute_path"))));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
@@ -143,6 +166,7 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
                 bottomSheetDialog.findViewById(R.id.selectAllBtnCV).setOnClickListener(view1 -> {
                     isSelectAllOptionClicked = true;
                     selectedItemsPositionsList.clear();
+                    selectedFilesUriList.clear();
                     notifyDataSetChanged();
                     bottomSheetDialog.dismiss();
                 });
@@ -150,13 +174,25 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
                 bottomSheetDialog.findViewById(R.id.deselectAllBtnCV).setOnClickListener(view1 -> {
                     isSelectAllOptionClicked = false;
                     selectedItemsPositionsList.clear();
+                    selectedFilesUriList.clear();
                     isSelectModeOn = false;
                     notifyDataSetChanged();
                     bottomSheetDialog.dismiss();
                     MainActivity.searchBtn.setVisible(true);
                     MainActivity.settingsBtn.setVisible(true);
+                    MainActivity.menu_selected_items_count.setVisible(false);
                 });
 
+                bottomSheetDialog.findViewById(R.id.shareAllBtnCV).setOnClickListener(view1 -> {
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_SEND_MULTIPLE);
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "Here are some files.");
+                    intent.setType("audio/mpeg");
+                    intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, selectedFilesUriList);
+                    context.startActivity(Intent.createChooser(intent, "Share to"));
+                    bottomSheetDialog.dismiss();
+                });
+                
                 bottomSheetDialog.findViewById(R.id.deleteAllBtnCV).setOnClickListener(view1 -> {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -194,7 +230,11 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
 
                         isSelectModeOn = false;
                         selectedItemsPositionsList.clear();
+                        selectedFilesUriList.clear();
                         notifyDataSetChanged();
+                        MainActivity.settingsBtn.setVisible(true);
+                        MainActivity.searchBtn.setVisible(true);
+                        MainActivity.menu_selected_items_count.setVisible(false);
                         bottomSheetDialog.dismiss();
 
                         if (fileInfos.length() <= 0){
@@ -211,13 +251,29 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
 
                 bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_control_btns);
 
+                TextView fileNameTVinBottomDialog = bottomSheetDialog.findViewById(R.id.fileNameTVinBottomDialog);
+                try {
+                    fileNameTVinBottomDialog.setText(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("name"));
+                }
+                catch (JSONException e) {
+                    e.printStackTrace();
+                    bottomSheetDialog.findViewById(R.id.fileNameContainerLLinBottomDialog).setVisibility(View.GONE);
+                }
+
                 bottomSheetDialog.findViewById(R.id.selectBtnCV).setOnClickListener(view1 -> {
                     isSelectModeOn = true;
                     holder.itemView.findViewById(R.id.selectionIcon).setVisibility(View.VISIBLE);
                     selectedItemsPositionsList.add(holder.getAdapterPosition());
+                    try {
+                        selectedFilesUriList.add(Uri.fromFile(new File(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("absolute_path"))));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     bottomSheetDialog.dismiss();
                     MainActivity.searchBtn.setVisible(false);
                     MainActivity.settingsBtn.setVisible(false);
+                    MainActivity.menu_selected_items_count.setVisible(true);
+                    MainActivity.menu_selected_items_count.setTitle(selectedItemsPositionsList.size() + "");
                 });
 
                 bottomSheetDialog.findViewById(R.id.playBtnCV).setOnClickListener(view1 -> {
@@ -296,7 +352,12 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
                         inputField.setText(oldName.substring(0, oldName.length() - 4));
                         inputField.setSingleLine(true);
                         inputField.setInputType(InputType.TYPE_CLASS_TEXT);
-                        inputField.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.hp_theme_color_ld)));
+                        if (CustomFunctions.isDarkModeOn(context)){
+                            inputField.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.hp_theme_color_dark)));
+                        }
+                        else{
+                            inputField.setBackgroundTintList(ColorStateList.valueOf(context.getColor(R.color.hp_theme_color_light)));
+                        }
                         inputField.setPadding(
                                 context.getResources().getDimensionPixelSize(R.dimen.input_box_padding_lr),
                                 context.getResources().getDimensionPixelSize(R.dimen.input_box_padding_tb),
@@ -450,14 +511,13 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
 
     public static class MyCustomViewHolder extends RecyclerView.ViewHolder{
 
-        TextView fileNameTV, fileInfoTV, fileDurationTV;
+        TextView fileNameTV, fileInfoTV;
 
         public MyCustomViewHolder(View itemView) {
             super(itemView);
 
             fileNameTV = itemView.findViewById(R.id.fileNameTV);
             fileInfoTV = itemView.findViewById(R.id.fileInfoTV);
-            fileDurationTV = itemView.findViewById(R.id.fileDurationTV);
         }
     }
 }

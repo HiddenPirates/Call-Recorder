@@ -44,17 +44,7 @@
                 android:layout_height="wrap_content"
                 android:singleLine="true"
                 android:text="25-10-2022    577.6 KB"
-                android:textSize="13sp"
-                android:layout_marginBottom="5dp"/>
-
-            <TextView
-                android:id="@+id/fileDurationTV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:text="Duration: 00:01:25"
-                android:textSize="13sp"
-                android:textStyle="bold"/>
+                android:textSize="13sp"/>
         </LinearLayout>
 
         <ImageView
