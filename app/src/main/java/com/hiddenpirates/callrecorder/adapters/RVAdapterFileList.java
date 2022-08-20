@@ -46,12 +46,16 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
     boolean isSelectModeOn, isSelectAllOptionClicked;
     ArrayList<Integer> selectedItemsPositionsList = new ArrayList<>();
     ArrayList<Uri> selectedFilesUriList = new ArrayList<>();
+    ArrayList<Integer> allPositions;
+    ArrayList<Uri> allFilesUriList;
 
 
-    public RVAdapterFileList(Context context, JSONArray fileInfos){
+    public RVAdapterFileList(Context context, JSONArray fileInfos, ArrayList<Integer> allPositions, ArrayList<Uri> allFilesUriList){
         this.context = context;
         this.fileInfos = fileInfos;
         fileInfos2 = fileInfos;
+        this.allPositions = allPositions;
+        this.allFilesUriList = allFilesUriList;
     }
 
     @NonNull
@@ -80,14 +84,7 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
 
         if (isSelectAllOptionClicked){
             holder.itemView.findViewById(R.id.selectionIcon).setVisibility(View.VISIBLE);
-            selectedItemsPositionsList.add(holder.getAdapterPosition());
-            try {
-                selectedFilesUriList.add(Uri.fromFile(new File(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("absolute_path"))));
-            }
-            catch (JSONException e) {
-                e.printStackTrace();
-            }
-            MainActivity.menu_selected_items_count.setTitle(selectedItemsPositionsList.size() + "");
+            MainActivity.menu_selected_items_count.setTitle(allPositions.size() + "");
         }
         else{
             holder.itemView.findViewById(R.id.selectionIcon).setVisibility(View.GONE);
@@ -109,11 +106,12 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
 
                         try{
                             selectedItemsPositionsList.remove((Integer) holder.getAdapterPosition()); // eta object er maddhomey remove korchhi
-//                            selectedItemsPositionsList.remove(selectedItemsPositionsList.indexOf(holder.getAdapterPosition())); //ota na hole eta index er maddhome remove korchhi
+//                            selectedItemsPositionsList.remove(selectedItemsPositionsList.indexOf(holder.getAdapterPosition())); //ota na hole eta index er maddhome remove korchh
+
                             try {
                                 selectedFilesUriList.remove(Uri.fromFile(new File(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("absolute_path"))));
                             }
-                            catch (JSONException e) {
+                            catch (Exception e) {
                                 e.printStackTrace();
                                 Toast.makeText(context, "" + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                             }
@@ -133,7 +131,8 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
                         MainActivity.menu_selected_items_count.setTitle(selectedItemsPositionsList.size() + "");
                         try {
                             selectedFilesUriList.add(Uri.fromFile(new File(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("absolute_path"))));
-                        } catch (JSONException e) {
+                        }
+                        catch (JSONException e) {
                             e.printStackTrace();
                         }
                     }
@@ -166,7 +165,9 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
                 bottomSheetDialog.findViewById(R.id.selectAllBtnCV).setOnClickListener(view1 -> {
                     isSelectAllOptionClicked = true;
                     selectedItemsPositionsList.clear();
+                    selectedItemsPositionsList.addAll(allPositions);
                     selectedFilesUriList.clear();
+                    selectedFilesUriList.addAll(allFilesUriList);
                     notifyDataSetChanged();
                     bottomSheetDialog.dismiss();
                 });
@@ -216,6 +217,8 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
 
                                 if (temp_file.delete()) {
                                     fileInfos.remove(filePosition);
+                                    allPositions.remove(filePosition);
+                                    allFilesUriList.remove(Uri.fromFile(new File(fileInfos.getJSONObject(filePosition).get("absolute_path").toString())));
                                     k++;
                                 }
                             }
@@ -325,6 +328,8 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
                                 fileInfos.remove(holder.getAdapterPosition());
                                 notifyDataSetChanged();
                                 notifyItemRemoved(holder.getAdapterPosition());
+                                allPositions.remove((Integer) holder.getAdapterPosition());
+                                allFilesUriList.remove(Uri.fromFile(new File(fileInfos.getJSONObject(holder.getAdapterPosition()).get("absolute_path").toString())));
 
                                 bottomSheetDialog.dismiss();
                             }

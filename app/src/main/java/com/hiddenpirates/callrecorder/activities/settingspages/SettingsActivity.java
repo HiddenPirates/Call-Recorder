@@ -23,7 +23,7 @@ import java.util.Objects;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    CheckBox startToastCB, stopToastCB;
+    CheckBox startToastCB, stopToastCB, hideStopRBtn;
     SwitchCompat recordingOnOffSwitch;
     CardView appearanceCV, recordingSortingOrderCV;
     TextView appearanceValueTV, savedSortByNameTV;
@@ -69,6 +69,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         startToastCB.setChecked(sharedPrefs.isStartRecordingToastEnabled());
         stopToastCB.setChecked(sharedPrefs.isStopRecordingToastEnabled());
+        hideStopRBtn.setChecked(sharedPrefs.isStopRecordingNotificationButtonHidden());
         recordingOnOffSwitch.setChecked(sharedPrefs.isCallRecordingEnabled());
         appearanceValueTV.setText(sharedPrefs.getAppearanceValue());
         savedSortByNameTV.setText(sharedPrefs.getRecordingSortOrder());
@@ -76,6 +77,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         startToastCB.setOnCheckedChangeListener((compoundButton, isChecked) -> sharedPrefs.saveRecordingStartToastBoolean(isChecked));
         stopToastCB.setOnCheckedChangeListener((compoundButton, isChecked) -> sharedPrefs.saveRecordingStopToastBoolean(isChecked));
+        hideStopRBtn.setOnCheckedChangeListener((compoundButton, isChecked) -> sharedPrefs.saveRecordingStopNotificationButtonBoolean(isChecked));
 
 //,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
         recordingOnOffSwitch.setOnCheckedChangeListener((compoundButton, isEnabled) -> sharedPrefs.saveCallRecordingEnabledOrNotBoolean(isEnabled));
@@ -134,6 +136,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void initVariables() {
         startToastCB = findViewById(R.id.startToastCB);
         stopToastCB = findViewById(R.id.stopToastCB);
+        hideStopRBtn = findViewById(R.id.hideStopRecordingBtnInNotification);
         recordingOnOffSwitch = findViewById(R.id.recordingOnOffSwitch);
 
         recordingSortingOrderCV = findViewById(R.id.recording_sort_order_cardview);

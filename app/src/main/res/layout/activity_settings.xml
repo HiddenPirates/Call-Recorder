@@ -71,6 +71,33 @@
       </RelativeLayout>
     </androidx.cardview.widget.CardView>
 
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        card_view:cardUseCompatPadding="false"
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:focusable="true">
+
+      <RelativeLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:padding="10dp">
+
+        <CheckBox
+            android:id="@+id/hideStopRecordingBtnInNotification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layoutDirection="rtl"
+            android:text="Hide stop button in notification"
+            android:textColor="?attr/text_color"
+            android:textSize="17sp" />
+
+      </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+
     <androidx.cardview.widget.CardView
         android:id="@+id/appearance_cardview"
         android:layout_width="match_parent"

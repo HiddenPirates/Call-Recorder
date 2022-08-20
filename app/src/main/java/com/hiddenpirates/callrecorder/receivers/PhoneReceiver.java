@@ -41,7 +41,12 @@ public class PhoneReceiver extends BroadcastReceiver {
                 if (!callEnded){
 
                     if (new SharedPrefs(context).isCallRecordingEnabled()){
-                        context.stopService(new Intent(context, RecordingService.class));
+                        try {
+                            context.stopService(new Intent(context, RecordingService.class));
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                        }
                     }
 
                     callEnded = true;

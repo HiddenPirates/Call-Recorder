@@ -32,6 +32,11 @@ public class SharedPrefs {
         mPrefEditor.commit();
     }
 
+    public void saveRecordingStopNotificationButtonBoolean(boolean isHidden){
+        mPrefEditor.putBoolean("hide_stop_recording_notification_button", isHidden);
+        mPrefEditor.commit();
+    }
+
     public void saveAppearanceValue(String appearanceValue){
         mPrefEditor.putString("appearance_value", appearanceValue);
         mPrefEditor.commit();
@@ -54,6 +59,10 @@ public class SharedPrefs {
 
     public boolean isStopRecordingToastEnabled(){
         return  mPreference.getBoolean("show_stop_recording_toast", true);
+    }
+
+    public boolean isStopRecordingNotificationButtonHidden(){
+        return  mPreference.getBoolean("hide_stop_recording_notification_button", true);
     }
 
     public String getAppearanceValue(){

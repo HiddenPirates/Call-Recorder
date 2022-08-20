@@ -31,7 +31,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -54,6 +53,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Objects;
 
 
@@ -77,9 +77,10 @@ public class MainActivity extends AppCompatActivity {
     private RVAdapterFileList rvAdapterFileList;
     private FloatingActionButton scrollBackToTopBtn, scrollToBottomBtn;
     private TextView totalFileLoadedTv;
-    private CardView openInFileManagerCV;
 
     private final JSONArray allFilesInformationJsonArray = new JSONArray();
+    private final ArrayList<Integer> allPositions = new ArrayList<>();
+    private final ArrayList<Uri> allFilesUriList = new ArrayList<>();
 
 
     @SuppressLint({"UseCompatLoadingForDrawables", "SetTextI18n"})
@@ -290,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
                             CustomFunctions.sortNewestFilesFirst(recordedFiles);
                         }
 
-                        int i = 1;
+                        int i = 1, j = 0;
 
                         for (File recordFile : recordedFiles) {
 
@@ -312,6 +313,9 @@ public class MainActivity extends AppCompatActivity {
                                     fileInfo.put("absolute_path", recordFile.getAbsolutePath());
 
                                     allFilesInformationJsonArray.put(fileInfo);
+                                    allPositions.add(j);
+                                    j++;
+                                    allFilesUriList.add(Uri.fromFile(new File( recordFile.getAbsolutePath())));
                                 }
                                 catch (Exception e) {
                                     e.printStackTrace();
@@ -327,7 +331,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 fileLoadingInfoContainer.setVisibility(View.GONE);
 
-                                rvAdapterFileList = new RVAdapterFileList(MainActivity.this, allFilesInformationJsonArray);
+                                rvAdapterFileList = new RVAdapterFileList(MainActivity.this, allFilesInformationJsonArray, allPositions, allFilesUriList);
                                 allFilesRecyclerView.setAdapter(rvAdapterFileList);
 
                                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getApplicationContext());
@@ -345,17 +349,6 @@ public class MainActivity extends AppCompatActivity {
 
                     }).start();
 
-
-
-//                  33333333333333333333333333333333333333333333333333333333333333333333333333333333
-
-                    openInFileManagerCV.setOnClickListener(view -> {
-
-                        Uri selectedUri = Uri.parse(RECORDING_SAVING_LOCATION);
-                        Intent intent = new Intent(Intent.ACTION_PICK);
-                        intent.setDataAndType(selectedUri, "*/*");
-                        startActivity(intent);
-                    });
 
 //                  33333333333333333333333333333333333333333333333333333333333333333333333333333333
 
@@ -556,6 +549,5 @@ public class MainActivity extends AppCompatActivity {
         scrollBackToTopBtn = findViewById(R.id.scrollBackToTopBtn);
         scrollToBottomBtn = findViewById(R.id.scrollToBottomBtn);
         totalFileLoadedTv = findViewById(R.id.total_file_loaded_tv);
-        openInFileManagerCV = findViewById(R.id.openInFileManagerCV);
     }
 }

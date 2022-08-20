@@ -76,6 +76,15 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".receivers.ActionReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="YES" />
+                <action android:name="NO" />
+            </intent-filter>
+        </receiver>
+
         <service
             android:name=".services.MyCallScreeningService"
             android:enabled="true"
