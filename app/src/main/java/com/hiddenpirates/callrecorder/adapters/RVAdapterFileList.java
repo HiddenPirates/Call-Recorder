@@ -70,6 +70,7 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
     @SuppressLint({"NotifyDataSetChanged", "UseCompatLoadingForDrawables"})
     @Override
     public void onBindViewHolder(@NonNull MyCustomViewHolder holder, int position) {
+
         try {
             holder.fileNameTV.setText(fileInfos.getJSONObject(holder.getAdapterPosition()).getString("name"));
             String fileSizeAndDate = fileInfos.getJSONObject(holder.getAdapterPosition()).get("modified_date") + "\t\t (" + fileInfos.getJSONObject(holder.getAdapterPosition()).get("size") + ")";
@@ -82,9 +83,12 @@ public class RVAdapterFileList extends RecyclerView.Adapter<RVAdapterFileList.My
 
 //        holder.itemView.setBackgroundColor(context.getColor(R.color.white));
 
-        if (isSelectAllOptionClicked){
+        if (isSelectModeOn){
+            MainActivity.menu_selected_items_count.setTitle(selectedItemsPositionsList.size() + "");
+        }
+
+        if (selectedItemsPositionsList.contains(holder.getAdapterPosition())){
             holder.itemView.findViewById(R.id.selectionIcon).setVisibility(View.VISIBLE);
-            MainActivity.menu_selected_items_count.setTitle(allPositions.size() + "");
         }
         else{
             holder.itemView.findViewById(R.id.selectionIcon).setVisibility(View.GONE);
