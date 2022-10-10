@@ -1,6 +1,6 @@
 {
     "zipUrl": "https://github.com/HiddenPirates/Call-Recorder/releases/download/v2.5/Call-Recorder_2.5-magisk.zip",
-    "changelog": "https://github.com/HiddenPirates/Call-Recorder/raw/master/app/magisk/updates/release/changelog.txt",
+    "changelog": "https://github.com/HiddenPirates/Call-Recorder/raw/master/magisk/updates/release/changelog.txt",
     "version": "2.5",
     "versionCode": 15
 }
