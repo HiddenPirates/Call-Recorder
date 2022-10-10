@@ -1,0 +1,4 @@
+### Version 2.5
+
+* Improved performance
+
