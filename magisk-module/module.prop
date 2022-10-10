@@ -1,0 +1,7 @@
+id=com.hiddenpirates.callrecorder
+name=Call Recorder
+version=2.5
+versionCode=15
+author=HiddenPirates
+description=Automatic Call Recorder
+updateJson=https://github.com/HiddenPirates/Call-Recorder/raw/master/magisk/updates/release/info.json
