@@ -3,9 +3,9 @@
     <shortcut
         android:shortcutId="settings"
         android:enabled="true"
-        android:icon="@drawable/ic_settings_for_shortcut"
-        android:shortcutShortLabel="@string/compose_shortcut_short_label_for_settings"
-        android:shortcutLongLabel="@string/compose_shortcut_long_label_for_settings">
+        android:icon="@drawable/ic_settings_for_shortcut_24"
+        android:shortcutShortLabel="@string/compose_shortcut_label_for_settings"
+        android:shortcutLongLabel="@string/compose_shortcut_label_for_settings">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetPackage="com.hiddenpirates.callrecorder"

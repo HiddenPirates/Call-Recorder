@@ -2,11 +2,9 @@ package com.hiddenpirates.callrecorder.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.role.RoleManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -56,12 +54,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Objects;
 
-
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_PERMISSION_CODE = 4528;
-    private static final int CALL_SCREEN_REQUEST_ID = 64543;
-    private static final int MANAGE_EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE = 5000;
     public static final String TAG = "Madara";
     public static final String RECORDING_SAVING_LOCATION = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath() + "/Call Recorder/";
 
@@ -90,10 +85,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 //--------------------------------------------------------------------------------------------------
-        if (new SharedPrefs(MainActivity.this).getAppearanceValue().equalsIgnoreCase(getString(R.string.dark_mode))){
+        if (new SharedPrefs(MainActivity.this).getAppearanceValue().equalsIgnoreCase(getString(R.string.dark_mode))) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        }
-        else if (new SharedPrefs(MainActivity.this).getAppearanceValue().equalsIgnoreCase(getString(R.string.light_mode))){
+        } else if (new SharedPrefs(MainActivity.this).getAppearanceValue().equalsIgnoreCase(getString(R.string.light_mode))) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
 //--------------------------------------------------------------------------------------------------
@@ -112,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
         View headView = navigationView.getHeaderView(0);
 
-        if (CustomFunctions.isDarkModeOn(this)){
+        if (CustomFunctions.isDarkModeOn(this)) {
             headView.setBackground(getDrawable(R.drawable.header_bg2));
         }
 
@@ -169,8 +163,7 @@ public class MainActivity extends AppCompatActivity {
                 CustomFunctions.checkForUpdate(this, checkUpdateItem);
                 return true;
 
-            }
-            else if (item.getItemId() == R.id.donate_me_action) {
+            } else if (item.getItemId() == R.id.donate_me_action) {
 
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.donation_page_link))));
                 return true;
@@ -217,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
 
 //        ------------------------------------------------------------------------------------------
 //
-        if (!CustomFunctions.isSystemApp(this)){
+        if (!CustomFunctions.isSystemApp(this)) {
 
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -229,12 +222,12 @@ public class MainActivity extends AppCompatActivity {
                 dialog.dismiss();
                 finishAndRemoveTask();
             });
-            builder.setNegativeButton("Read Post",  (dialog, which) -> {
+            builder.setNegativeButton("Read Post", (dialog, which) -> {
                 try {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.tutorial_post_link))));
                     new Handler(Looper.getMainLooper()).postDelayed(this::finishAndRemoveTask, 2000);
                 }
-                catch (Exception e){
+                catch (Exception e) {
                     Toast.makeText(this, "No app found to open this link", Toast.LENGTH_SHORT).show();
                     dialog.dismiss();
                     onBackPressed();
@@ -242,18 +235,19 @@ public class MainActivity extends AppCompatActivity {
             });
             builder.create();
             builder.show();
-        }
-        else{
-            requestCallScreenPermission();
 
-            if (!isPermissionGranted()){
+        }
+        else {
+
+            if (!isPermissionGranted()) {
                 askPermission();
+                Toast.makeText(this, "Please allow all permissions.", Toast.LENGTH_SHORT).show();
             }
             else {
 
                 File recordingFolderPath = new File(RECORDING_SAVING_LOCATION);
 
-                if (!recordingFolderPath.exists()){
+                if (!recordingFolderPath.exists()) {
                     recordingFolderPath.mkdirs();
                 }
 
@@ -275,19 +269,19 @@ public class MainActivity extends AppCompatActivity {
 
                         String sortOrder = new SharedPrefs(MainActivity.this).getRecordingSortOrder();
 
-                        if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_name_ascending))){
+                        if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_name_ascending))) {
                             CustomFunctions.sortFilesByNameAscending(recordedFiles);
                         }
-                        else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_name_descending))){
+                        else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_name_descending))) {
                             CustomFunctions.sortFilesByNameDescending(recordedFiles);
                         }
-                        else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_new))){
+                        else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_new))) {
                             CustomFunctions.sortNewestFilesFirst(recordedFiles);
                         }
-                        else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_old))){
+                        else if (sortOrder.equalsIgnoreCase(getString(R.string.sort_by_old))) {
                             CustomFunctions.sortOldestFilesFirst(recordedFiles);
                         }
-                        else{
+                        else {
                             CustomFunctions.sortNewestFilesFirst(recordedFiles);
                         }
 
@@ -301,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
 
                             i++;
 
-                            if (recordFile.isFile() && FilenameUtils.getExtension(recordFile.getAbsolutePath()).equalsIgnoreCase("m4a") && recordFile.length() > 0){
+                            if (recordFile.isFile() && FilenameUtils.getExtension(recordFile.getAbsolutePath()).equalsIgnoreCase("m4a") && recordFile.length() > 0) {
 
 
                                 JSONObject fileInfo = new JSONObject();
@@ -315,9 +309,8 @@ public class MainActivity extends AppCompatActivity {
                                     allFilesInformationJsonArray.put(fileInfo);
                                     allPositions.add(j);
                                     j++;
-                                    allFilesUriList.add(Uri.fromFile(new File( recordFile.getAbsolutePath())));
-                                }
-                                catch (Exception e) {
+                                    allFilesUriList.add(Uri.fromFile(new File(recordFile.getAbsolutePath())));
+                                } catch (Exception e) {
                                     e.printStackTrace();
                                 }
                             }
@@ -325,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
 
                         handler.post(() -> {
 
-                            if (allFilesInformationJsonArray.length() > 0){
+                            if (allFilesInformationJsonArray.length() > 0) {
 
                                 searchBtn.setVisible(true);
 
@@ -339,8 +332,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 allFilesRecyclerView.setLayoutManager(linearLayoutManager);
                                 allFilesRecyclerView.setItemAnimator(new DefaultItemAnimator());
-                            }
-                            else {
+                            } else {
                                 emptyFileIconContainer.setVisibility(View.VISIBLE);
                                 allFilesRecyclerView.setVisibility(View.GONE);
                                 fileLoadingInfoContainer.setVisibility(View.GONE);
@@ -371,13 +363,14 @@ public class MainActivity extends AppCompatActivity {
                             if (dy > 0) { // scrolling down
                                 scrollBackToTopBtn.setVisibility(View.GONE);
                                 scrollToBottomBtn.setVisibility(View.VISIBLE);
-                            }
-                            else if (dy < 0) { // scrolling up
+                            } else if (dy < 0) { // scrolling up
                                 scrollBackToTopBtn.setVisibility(View.VISIBLE);
                                 scrollToBottomBtn.setVisibility(View.GONE);
                             }
                         }
                     });
+                } else {
+                    Toast.makeText(this, "CCC " + recordedFiles.length, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -425,14 +418,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
-        if (item.getItemId() == R.id.menu_settings_action){
+        if (item.getItemId() == R.id.menu_settings_action) {
 
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             intent.putExtra("activity_started_by", BuildConfig.APPLICATION_ID);
             startActivity(intent);
             return true;
-        }
-        else{
+        } else {
             return super.onOptionsItemSelected(item);
         }
     }
@@ -442,13 +434,11 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-        }
-        else{
+        } else {
             if (doubleBackPressed) {
                 super.onBackPressed();
                 finish();
-            }
-            else {
+            } else {
                 this.doubleBackPressed = true;
                 Snackbar.make(drawerLayout, "Double back press to exit.", Snackbar.LENGTH_LONG).show();
                 new Handler(Looper.getMainLooper()).postDelayed(() -> doubleBackPressed = false, 2000);
@@ -462,42 +452,27 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == MANAGE_EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
-                if (!Environment.isExternalStorageManager()){
-                    Toast.makeText(this, "Please allow access of this device's external storage", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS));
-                }
-            }
-        }
     }
 
-// _________________________________________________________________________________________________
+    // _________________________________________________________________________________________________
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (requestCode == REQUEST_PERMISSION_CODE && grantResults.length >= 3
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                && grantResults[1] == PackageManager.PERMISSION_GRANTED
-                && grantResults[2] == PackageManager.PERMISSION_GRANTED
-                && grantResults[3] == PackageManager.PERMISSION_GRANTED
-                && grantResults[4] == PackageManager.PERMISSION_GRANTED
-        ){
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                if (!Environment.isExternalStorageManager()){
-                    requestAllFileAccessPermission();
-                }
-            }
-        }
-        else{
+        if (requestCode != REQUEST_PERMISSION_CODE || grantResults.length < 3
+                || grantResults[0] != PackageManager.PERMISSION_GRANTED
+                || grantResults[1] != PackageManager.PERMISSION_GRANTED
+                || grantResults[2] != PackageManager.PERMISSION_GRANTED
+                || grantResults[3] != PackageManager.PERMISSION_GRANTED
+        )
+        {
             Toast.makeText(this, "Please allow all permission", Toast.LENGTH_SHORT).show();
 
             try {
                 startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + getPackageName())));
             }
-            catch (Exception e){
-                CustomFunctions.simpleAlert(this, "Error", getString(R.string.app_info_page_opening_failed_message), "Ok",  AppCompatResources.getDrawable(this, R.drawable.ic_error));
+            catch (Exception e) {
+                CustomFunctions.simpleAlert(this, "Error", getString(R.string.app_info_page_opening_failed_message), "Ok", AppCompatResources.getDrawable(this, R.drawable.ic_error));
             }
         }
     }
@@ -510,9 +485,7 @@ public class MainActivity extends AppCompatActivity {
         return ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_CALL_LOG) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED;
+                && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED;
     }
 
     private void askPermission() {
@@ -520,27 +493,12 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.RECORD_AUDIO,
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_CONTACTS,
-                Manifest.permission.READ_CALL_LOG,
-                Manifest.permission.READ_PHONE_STATE
+                Manifest.permission.READ_CONTACTS
         }, REQUEST_PERMISSION_CODE);
     }
 
-    private void requestAllFileAccessPermission(){
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-            intent.setData(Uri.fromParts("package", getPackageName(), null));
-            startActivityForResult(intent, MANAGE_EXTERNAL_STORAGE_REQUEST_PERMISSION_CODE);
-        }
-    }
 
-    private void requestCallScreenPermission(){
-        RoleManager roleManager = (RoleManager) getSystemService(ROLE_SERVICE);
-        Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_CALL_SCREENING);
-        startActivityForResult(intent, CALL_SCREEN_REQUEST_ID);
-    }
-
-    private void initVariables(){
+    private void initVariables() {
         emptyFileIconContainer = findViewById(R.id.empty_file_icon_container);
         fileLoadingInfoContainer = findViewById(R.id.file_loading_info_container);
         drawerLayout = findViewById(R.id.drawerLayout);

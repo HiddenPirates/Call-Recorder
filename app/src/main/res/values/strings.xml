@@ -16,8 +16,9 @@
     <string name="device_default">Device default</string>
     <string name="dark_mode">Dark mode</string>
     <string name="light_mode">Light mode</string>
-    <string name="compose_shortcut_short_label_for_settings">Settings</string>
-    <string name="compose_shortcut_long_label_for_settings">Call Recorder settings</string>
+
+    <string name="compose_shortcut_label_for_settings">Settings</string>
+
     <string name="report_issue_text">Something went wrong. Please report this issue.</string>
 
     <string name="github_release_page_link">https://github.com/HiddenPirates/Call-Recorder/releases</string>
@@ -30,4 +31,5 @@
     <string name="facebook_page_link">https://www.facebook.com/TeamHiddenPirates</string>
     <string name="donation_page_link">https://donate.hiddenpirates.com</string>
     <string name="app_info_page_opening_failed_message">Failed to open application setting info page. Please open app info page and allow all permissions manually from settings.</string>
+
 </resources>
