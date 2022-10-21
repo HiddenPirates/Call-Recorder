@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.os.StrictMode;
 import android.provider.Settings;
 import android.util.Log;
@@ -153,18 +154,10 @@ public class MainActivity extends AppCompatActivity {
             Intent intent1;
 
             if (item.getItemId() == R.id.check_update_action) {
-
-                Menu menuNav = navigationView.getMenu();
-                MenuItem checkUpdateItem = menuNav.findItem(R.id.check_update_action);
-                checkUpdateItem.setEnabled(false);
-                checkUpdateItem.setTitle("Checking for new update");
-
-                Toast.makeText(MainActivity.this, "Checking for new update!", Toast.LENGTH_LONG).show();
-                CustomFunctions.checkForUpdate(this, checkUpdateItem);
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_release_page_link))));
                 return true;
 
             } else if (item.getItemId() == R.id.donate_me_action) {
-
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.donation_page_link))));
                 return true;
 
@@ -455,6 +448,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // _________________________________________________________________________________________________
+    @SuppressLint("BatteryLife")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -473,6 +467,18 @@ public class MainActivity extends AppCompatActivity {
             }
             catch (Exception e) {
                 CustomFunctions.simpleAlert(this, "Error", getString(R.string.app_info_page_opening_failed_message), "Ok", AppCompatResources.getDrawable(this, R.drawable.ic_error));
+            }
+        }
+        else{
+
+            Intent intent = new Intent();
+            String packageName = getPackageName();
+            PowerManager pm = (PowerManager) getSystemService(POWER_SERVICE);
+
+            if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                intent.setData(Uri.parse("package:" + packageName));
+                startActivity(intent);
             }
         }
     }

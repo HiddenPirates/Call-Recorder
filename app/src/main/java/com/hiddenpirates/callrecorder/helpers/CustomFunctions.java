@@ -5,20 +5,16 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.hiddenpirates.callrecorder.BuildConfig;
 import com.hiddenpirates.callrecorder.R;
@@ -156,68 +152,24 @@ public class CustomFunctions {
 //__________________________________________________________________________________________________
 
     @SuppressLint("UseCompatLoadingForDrawables")
-    public static void checkForUpdate(Context context, MenuItem menuItem) {
-
-        double nextVersion = Double.parseDouble(BuildConfig.VERSION_NAME) + 0.1;
-        String vTag = "v" + round(nextVersion, 1);
-
-        Log.d("MADARA", "checkForUpdate: " + vTag);
-
-        new Thread(() -> {
-            try {
-                String document_title = Jsoup.connect(context.getString(R.string.github_release_tag_page_link) + vTag)
-                        .timeout(30000).get().title();
-
-                Log.d("MADARA", "checkForUpdate: " + document_title);
-
-                ((AppCompatActivity) context).runOnUiThread(() -> {
-
-                    menuItem.setEnabled(true);
-                    menuItem.setTitle("Check New Update");
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setTitle(context.getResources().getString(R.string.app_name));
-                    builder.setMessage("New update found!");
-                    builder.setCancelable(false);
-                    builder.setIcon(context.getResources().getDrawable(R.drawable.nav_header_img));
-                    builder.setPositiveButton("Update", (dialog, which) -> {
-                        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(context.getString(R.string.github_release_tag_page_link) + vTag)));
-                        dialog.dismiss();
-                    });
-
-                    builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-
-                    AlertDialog alert = builder.create();
-                    alert.show();
-
-                });
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-                Log.d("MADARA", "checkForUpdate: " + e.getMessage());
-
-                ((AppCompatActivity) context).runOnUiThread(() -> {
-
-                    menuItem.setEnabled(true);
-                    menuItem.setTitle("Check New Update");
-                    simpleAlert(context, "No update found", "You're using the latest version.", "Dismiss", context.getResources().getDrawable(R.drawable.done_icon));
-                });
-            }
-        }).start();
-    }
-
-//    .................................
-
-    @SuppressLint("UseCompatLoadingForDrawables")
     public static void checkForUpdateOnStartApp(Context context, View button) {
 
-        double nextVersion = Double.parseDouble(BuildConfig.VERSION_NAME) + 0.1;
-        String vTag = "v" + round(nextVersion, 1);
+        String vTag;
+
+        try{
+            double nextVersion = Double.parseDouble(BuildConfig.VERSION_NAME) + 0.1;
+            vTag = "v" + nextVersion;
+        }
+        catch (Exception e){
+            vTag = "v";
+        }
+
+        String finalVTag = vTag;
 
         new Thread(() -> {
 
             try {
-                Jsoup.connect(context.getString(R.string.github_release_tag_page_link) + vTag).timeout(30000).get().title();
+                Jsoup.connect(context.getString(R.string.github_release_tag_page_link) + finalVTag).timeout(30000).get().title();
                 button.setVisibility(View.VISIBLE);
             }
             catch (IOException e) {
