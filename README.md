@@ -1,4 +1,4 @@
-This repo is now archived and I am not maintaining it anymore. An user called VenomDino is still maintaining this project on his profile. <a href="https://github.com/VenomDino/Android-Call-Recorder">https://https://github.com/VenomDino/Android-Call-Recorder</a>
+This repo is now archived and I am not maintaining it anymore. An user called VenomDino is still maintaining this project on his profile. <a href="https://github.com/VenomDino/Android-Call-Recorder">https://github.com/VenomDino/Android-Call-Recorder</a>
 
  # Call Recorder
 
